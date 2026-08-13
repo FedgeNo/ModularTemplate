@@ -217,11 +217,6 @@ emoji-picker.Active {
 .CheckboxField input { width: auto; margin: 0; }
 .CheckboxField label { display: inline; margin-bottom: 0; }
 
-.LoginFormFooter {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
 .TextareaField textarea {
     width: 100%;
     resize: vertical;
