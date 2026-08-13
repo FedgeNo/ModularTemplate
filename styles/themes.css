@@ -1,0 +1,630 @@
+/* ============================================================
+   Visual system – themes
+   Design tokens, colour palette, and theme overrides.
+   ============================================================ */
+
+/* Every theme sets all five --*-image hooks. They are optional by design (the
+   flat colour shows through when one is absent), but a theme that skips them
+   renders flatter than the rest for no reason, so none of them do.
+   Outside the ramp themes below the gradients are deliberately slight - a half
+   step of tone, enough to give a surface a direction without turning a plain
+   theme into a display piece. Foregrounds are still checked against the worst
+   stop of whatever sits behind them, not the flat colour. */
+
+/* The default look is Sunset: what a visitor with a light-mode system sees
+   before choosing anything. Its values are duplicated under
+   [data-theme='sunset'] below for the people who picked it explicitly; the
+   original plain palette lives on as [data-theme='light']. */
+:root {
+    --paper: #e06a48;
+    --surface: #ffc4ad;
+    --surface-2: #f5a488;
+    --ink: #35201c;
+    --muted: #5e4237;
+    --hairline: #e79b7c;
+    --accent: #7e2a25;
+    --accent-strong: #641f1b;
+    --accent-soft: #ffb09b;
+    --accent-ink: #ffffff;
+    --link: var(--accent);
+    --danger: #8f0f40;
+    --danger-soft: #ffb3c8;
+    --shadow-card: 0 1px 2px rgb(53 32 28 / 0.12), 0 6px 20px -8px rgb(53 32 28 / 0.24);
+    --shadow-pop: 0 4px 10px rgb(53 32 28 / 0.16), 0 16px 40px -12px rgb(53 32 28 / 0.38);
+    --glass: rgb(255 196 173 / 0.88);
+
+    --paper-image: linear-gradient(180deg, #7d5aa4 0%, #c3648c 30%, #e06a48 58%, #ec8a3c 80%, #e5a34a 100%);
+    --surface-image: linear-gradient(160deg, #ffcdb8 0%, #ffbaa0 100%);
+    --button-image: linear-gradient(160deg, #ffb79c 0%, #ffa585 100%);
+    --button-image-hover: linear-gradient(160deg, #ffad8e 0%, #ff9a76 100%);
+    --accent-image: linear-gradient(135deg, #93332d 0%, #7e2a25 55%, #641f1b 100%);
+
+    --radius-card: 1.125rem;
+    --radius-ctl: 0.5rem;
+    --radius-pill: 999px;
+    --glom-corner: 0.25rem;
+    --display-font: 'Inter', system-ui, sans-serif;
+    --nav-height: calc(3.25rem + 1px);
+    --content-padding-inline: max(1rem, calc((100% - 40rem) / 2));
+}
+
+/* The default dark look is Ironbow: what a dark-mode system gets before
+   choosing anything. Duplicated under [data-theme='ironbow'] below for the
+   people who picked it; the original plain palette lives on as
+   [data-theme='dark']. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --paper: #000000;
+        --surface: #12002d;
+        --surface-2: #2a0a5e;
+        --ink: #ffffff;
+        --muted: #ffb37a;
+        --hairline: #4b0f6b;
+        --accent: #ff8c00;
+        --accent-strong: #ffd300;
+        --accent-soft: rgb(255 140 0 / 0.18);
+        --accent-ink: #000000;
+        --link: #ffd300;
+        --danger: #ff7a5c;
+        --danger-soft: rgb(255 122 92 / 0.20);
+        --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(123 26 110 / 0.60);
+        --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(255 140 0 / 0.40);
+        --glass: rgb(0 0 0 / 0.90);
+
+        --paper-image: linear-gradient(180deg, #000000 0%, #0a0322 60%, #1a0a3c 100%);
+        --surface-image: linear-gradient(160deg, #12002d 0%, #35085c 100%);
+        --button-image: linear-gradient(160deg, #2a0a5e 0%, #4b0f6b 100%);
+        --button-image-hover: linear-gradient(160deg, #3a0a63 0%, #7b1a6e 100%);
+        --accent-image: linear-gradient(135deg, #e35d3a 0%, #ff8c00 40%, #ffd300 75%, #ffffff 100%);
+    }
+}
+
+/* The plain palette the site used to default to in light mode. */
+:root[data-theme='light'] {
+    --paper: #dfe6db;
+    --surface: #ffffff;
+    --surface-2: #e9ece7;
+    --ink: #1f2421;
+    --muted: #565d58;
+    --hairline: #e0e4de;
+    --accent: #076850;
+    --accent-strong: #05543f;
+    --accent-soft: #e2f4ec;
+    --accent-ink: #ffffff;
+    --danger: #bd3535;
+    --danger-soft: #fbeaea;
+    --shadow-card: 0 1px 2px rgb(31 36 33 / 0.05), 0 6px 20px -8px rgb(31 36 33 / 0.10);
+    --shadow-pop: 0 4px 10px rgb(31 36 33 / 0.08), 0 16px 40px -12px rgb(31 36 33 / 0.22);
+    --glass: rgb(223 230 219 / 0.82);
+
+    --paper-image: linear-gradient(180deg, #e7ede2 0%, #dfe6db 55%, #d7dfd2 100%);
+    --surface-image: linear-gradient(160deg, #ffffff 0%, #f6f9f4 100%);
+    --button-image: linear-gradient(160deg, #eef1ec 0%, #e2e6df 100%);
+    --button-image-hover: linear-gradient(160deg, #e7ebe4 0%, #d9dfd4 100%);
+    --accent-image: linear-gradient(135deg, #07785c 0%, #076850 55%, #05543f 100%);
+}
+
+:root[data-theme='dark'] {
+    --paper: #131715;
+    --surface: #1c211e;
+    --surface-2: #262d29;
+    --ink: #e8ece9;
+    --muted: #94a099;
+    --hairline: #2a322d;
+    --accent: #3dd9a4;
+    --accent-strong: #5ee3b5;
+    --accent-soft: rgb(61 217 164 / 0.12);
+    --accent-ink: #0b2a1f;
+    --danger: #f17b7b;
+    --danger-soft: rgb(241 123 123 / 0.12);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.35), 0 8px 24px -10px rgb(0 0 0 / 0.5);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.4), 0 18px 44px -12px rgb(0 0 0 / 0.6);
+    --glass: rgb(19 23 21 / 0.82);
+
+    --paper-image: linear-gradient(180deg, #0f1311 0%, #131715 55%, #171c19 100%);
+    --surface-image: linear-gradient(160deg, #1c211e 0%, #222823 100%);
+    --button-image: linear-gradient(160deg, #262d29 0%, #2e3630 100%);
+    --button-image-hover: linear-gradient(160deg, #2c3430 0%, #364039 100%);
+    --accent-image: linear-gradient(135deg, #35c795 0%, #3dd9a4 55%, #5ee3b5 100%);
+}
+
+:root[data-theme='sepia'] {
+    --paper: #ead9bd;
+    --surface: #fffaf0;
+    --surface-2: #ede0c8;
+    --ink: #3a2f22;
+    --muted: #615647;
+    --hairline: #e3d5b8;
+    --accent: #854a15;
+    --accent-strong: #6d3d11;
+    --accent-soft: #f6e6d3;
+    --accent-ink: #ffffff;
+    --danger: #a93c0c;
+    --danger-soft: #f7e0d3;
+    --shadow-card: 0 1px 2px rgb(58 47 34 / 0.08), 0 6px 20px -8px rgb(58 47 34 / 0.14);
+    --shadow-pop: 0 4px 10px rgb(58 47 34 / 0.10), 0 16px 40px -12px rgb(58 47 34 / 0.26);
+    --glass: rgb(234 217 189 / 0.85);
+
+    --paper-image: linear-gradient(180deg, #f0e2cb 0%, #ead9bd 55%, #e3d3b2 100%);
+    --surface-image: linear-gradient(160deg, #fffaf0 0%, #f9f1e2 100%);
+    --button-image: linear-gradient(160deg, #f0e5d1 0%, #e6d8bf 100%);
+    --button-image-hover: linear-gradient(160deg, #ecdfc8 0%, #ddcdb0 100%);
+    --accent-image: linear-gradient(135deg, #96551a 0%, #854a15 55%, #6d3d11 100%);
+}
+
+:root[data-theme='midnight'] {
+    --paper: #0d1021;
+    --surface: #161a33;
+    --surface-2: #1f2540;
+    --ink: #e6e8f5;
+    --muted: #9a9fc2;
+    --hairline: #2c3357;
+    --accent: #7c8cff;
+    --accent-strong: #97a4ff;
+    --accent-soft: rgb(124 140 255 / 0.14);
+    --accent-ink: #0d1021;
+    --danger: #ff7b9c;
+    --danger-soft: rgb(255 123 156 / 0.14);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -10px rgb(0 0 0 / 0.55);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.45), 0 18px 44px -12px rgb(0 0 0 / 0.65);
+    --glass: rgb(13 16 33 / 0.82);
+
+    --paper-image: linear-gradient(180deg, #090c1b 0%, #0d1021 55%, #12162c 100%);
+    --surface-image: linear-gradient(160deg, #161a33 0%, #1c2140 100%);
+    --button-image: linear-gradient(160deg, #1f2540 0%, #272e50 100%);
+    --button-image-hover: linear-gradient(160deg, #252c4c 0%, #303a63 100%);
+    --accent-image: linear-gradient(135deg, #6b7cf5 0%, #7c8cff 55%, #97a4ff 100%);
+}
+
+:root[data-theme='sunset'] {
+    /* The flat colour under the sky below - a stop from its middle, so a
+       browser that drops the gradient still lands inside the sunset. */
+    --paper: #e06a48;
+    --surface: #ffc4ad;
+    --surface-2: #f5a488;
+    --ink: #35201c;
+    --muted: #5e4237;
+    --hairline: #e79b7c;
+    --accent: #7e2a25;
+    --accent-strong: #641f1b;
+    --accent-soft: #ffb09b;
+    --accent-ink: #ffffff;
+    --danger: #8f0f40;
+    --danger-soft: #ffb3c8;
+    --shadow-card: 0 1px 2px rgb(53 32 28 / 0.12), 0 6px 20px -8px rgb(53 32 28 / 0.24);
+    --shadow-pop: 0 4px 10px rgb(53 32 28 / 0.16), 0 16px 40px -12px rgb(53 32 28 / 0.38);
+    --glass: rgb(255 196 173 / 0.88);
+
+    /* The page is the sky. Read down the way you would look down at a sunset:
+       the violet dusk overhead, then rose, the deep coral the sun is actually
+       burning through, and amber sitting on the horizon at the bottom.
+       Saturated and dark enough to read as evening, never white glare - the
+       content lives on the warm cards, not on the sky. body pins this with
+       background-attachment: fixed, so it stays put and the content moves
+       over it rather than dragging the sky along. How far it can be pushed is
+       set by the darkest stop, since every dark foreground on the page has to
+       stay readable against it - which is what moved --muted and --accent
+       down with it. */
+    --paper-image: linear-gradient(180deg, #7d5aa4 0%, #c3648c 30%, #e06a48 58%, #ec8a3c 80%, #e5a34a 100%);
+    --surface-image: linear-gradient(160deg, #ffcdb8 0%, #ffbaa0 100%);
+    --button-image: linear-gradient(160deg, #ffb79c 0%, #ffa585 100%);
+    --button-image-hover: linear-gradient(160deg, #ffad8e 0%, #ff9a76 100%);
+    --accent-image: linear-gradient(135deg, #93332d 0%, #7e2a25 55%, #641f1b 100%);
+}
+
+:root[data-theme='rose'] {
+    --paper: #f2ccd8;
+    --surface: #fffafc;
+    --surface-2: #f8dde6;
+    --ink: #3a1f2a;
+    --muted: #6b4d58;
+    --hairline: #efcbd8;
+    --accent: #952e52;
+    --accent-strong: #7d2645;
+    --accent-soft: #fbe1ea;
+    --accent-ink: #ffffff;
+    --danger: #a93a0c;
+    --danger-soft: #f7ddd0;
+    --shadow-card: 0 1px 2px rgb(58 31 42 / 0.07), 0 6px 20px -8px rgb(58 31 42 / 0.16);
+    --shadow-pop: 0 4px 10px rgb(58 31 42 / 0.10), 0 16px 40px -12px rgb(58 31 42 / 0.28);
+    --glass: rgb(242 204 216 / 0.85);
+
+    --paper-image: linear-gradient(180deg, #f7d5df 0%, #f2ccd8 55%, #eec4d2 100%);
+    --surface-image: linear-gradient(160deg, #fffafc 0%, #fdf2f6 100%);
+    --button-image: linear-gradient(160deg, #fae3ec 0%, #f5d6e1 100%);
+    --button-image-hover: linear-gradient(160deg, #f8dee8 0%, #f0cbd9 100%);
+    --accent-image: linear-gradient(135deg, #a8355c 0%, #952e52 55%, #7d2645 100%);
+}
+
+/* Forest, Ocean and Lavender were built around light ink but sat on grounds
+   lighter than mid-grey, which put body text at about 2:1 and left their
+   accents invisible against it. The grounds are what moved: each keeps its hue
+   and drops to a proper dark ground, so the light ink they were designed for
+   works and the accent can stay a colour instead of collapsing to mud. */
+:root[data-theme='forest'] {
+    --paper: #121a0f;
+    --surface: #1b2617;
+    --surface-2: #243220;
+    --ink: #e9f0e5;
+    --muted: #a3b39a;
+    --hairline: #2f3f29;
+    --accent: #6cc24a;
+    --accent-strong: #8fd96f;
+    --accent-soft: rgb(108 194 74 / 0.15);
+    --accent-ink: #0d1a08;
+    --danger: #f0916b;
+    --danger-soft: rgb(240 145 107 / 0.15);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.40), 0 8px 24px -10px rgb(18 26 15 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.45), 0 18px 44px -12px rgb(108 194 74 / 0.30);
+    --glass: rgb(18 26 15 / 0.85);
+
+    --paper-image: linear-gradient(180deg, #0e150c 0%, #121a0f 55%, #172014 100%);
+    --surface-image: linear-gradient(160deg, #1b2617 0%, #212d1c 100%);
+    --button-image: linear-gradient(160deg, #243220 0%, #2c3c27 100%);
+    --button-image-hover: linear-gradient(160deg, #2a3926 0%, #354832 100%);
+    --accent-image: linear-gradient(135deg, #5cb03c 0%, #6cc24a 55%, #8fd96f 100%);
+}
+
+:root[data-theme='ocean'] {
+    --paper: #0c1a1d;
+    --surface: #14262a;
+    --surface-2: #1c3237;
+    --ink: #e8f0f2;
+    --muted: #9fb8bc;
+    --hairline: #27424a;
+    --accent: #35c6d9;
+    --accent-strong: #6fdcea;
+    --accent-ink: #07222a;
+    --accent-soft: rgb(53 198 217 / 0.15);
+    --danger: #f08aa5;
+    --danger-soft: rgb(240 138 165 / 0.15);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.40), 0 8px 24px -10px rgb(12 26 29 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.45), 0 18px 44px -12px rgb(53 198 217 / 0.30);
+    --glass: rgb(12 26 29 / 0.85);
+
+    --paper-image: linear-gradient(180deg, #091417 0%, #0c1a1d 55%, #102125 100%);
+    --surface-image: linear-gradient(160deg, #14262a 0%, #1a2e33 100%);
+    --button-image: linear-gradient(160deg, #1c3237 0%, #233c42 100%);
+    --button-image-hover: linear-gradient(160deg, #21393f 0%, #2b474f 100%);
+    --accent-image: linear-gradient(135deg, #2bb2c4 0%, #35c6d9 55%, #6fdcea 100%);
+}
+
+:root[data-theme='lavender'] {
+    --paper: #16111f;
+    --surface: #211a2e;
+    --surface-2: #2c2440;
+    --ink: #f0edf8;
+    --muted: #b8b0cc;
+    --hairline: #3a3055;
+    --accent: #b98ef5;
+    --accent-strong: #cfb0ff;
+    --accent-soft: rgb(185 142 245 / 0.15);
+    --accent-ink: #180f28;
+    --danger: #f08aa5;
+    --danger-soft: rgb(240 138 165 / 0.15);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.40), 0 8px 24px -10px rgb(22 17 31 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.45), 0 18px 44px -12px rgb(185 142 245 / 0.30);
+    --glass: rgb(22 17 31 / 0.85);
+
+    --paper-image: linear-gradient(180deg, #110d18 0%, #16111f 55%, #1c1626 100%);
+    --surface-image: linear-gradient(160deg, #211a2e 0%, #282036 100%);
+    --button-image: linear-gradient(160deg, #2c2440 0%, #352c4d 100%);
+    --button-image-hover: linear-gradient(160deg, #322949 0%, #3e345c 100%);
+    --accent-image: linear-gradient(135deg, #a87ae8 0%, #b98ef5 55%, #cfb0ff 100%);
+}
+
+:root[data-theme='gold'] {
+    --paper: #e8ce8f;
+    --surface: #fffdf4;
+    --surface-2: #efdcac;
+    --ink: #3a2f14;
+    --muted: #5c5030;
+    --hairline: #e5cf95;
+    --accent: #6a4c10;
+    --accent-strong: #553d0d;
+    --accent-soft: #f6ecca;
+    --accent-ink: #ffffff;
+    --danger: #99341a;
+    --danger-soft: #f1e0cf;
+    --shadow-card: 0 1px 2px rgb(58 47 20 / 0.08), 0 6px 20px -8px rgb(58 47 20 / 0.18);
+    --shadow-pop: 0 4px 10px rgb(58 47 20 / 0.11), 0 16px 40px -12px rgb(58 47 20 / 0.30);
+    --glass: rgb(232 206 143 / 0.85);
+
+    --paper-image: linear-gradient(180deg, #eed69b 0%, #e8ce8f 55%, #e3c684 100%);
+    --surface-image: linear-gradient(160deg, #fffdf4 0%, #fbf6e6 100%);
+    --button-image: linear-gradient(160deg, #f3e2b6 0%, #ebd7a2 100%);
+    --button-image-hover: linear-gradient(160deg, #efdcaa 0%, #e4cd93 100%);
+    --accent-image: linear-gradient(135deg, #7a5713 0%, #6a4c10 55%, #553d0d 100%);
+}
+
+/* The magenta was the dark #880088 in both roles it plays - as text on black and
+   as the fill under black text - and failed at 2.4:1 either way. Brightened to
+   carry the same colour at a legible weight, and the danger wash behind it
+   dropped to a true backdrop instead of being that same magenta. */
+:root[data-theme='hacker'] {
+    --paper: #000000;
+    --surface: #000000;
+    --surface-2: #0a0f0a;
+    --ink: #00ff00;
+    --muted: #00c000;
+    --hairline: #008000;
+    --accent: #00ff00;
+    --accent-strong: #ff55ff;
+    --accent-soft: #006600;
+    --accent-ink: #000000;
+    --link: #ff00ff;
+    --danger: #ff00ff;
+    --danger-soft: #2b002b;
+    --shadow-card: 0 0 0 1px rgb(0 255 0 / 0.25);
+    --shadow-pop: 0 0 0 1px rgb(0 255 0 / 0.40), 0 10px 34px -10px rgb(0 255 0 / 0.30);
+    --glass: rgb(0 0 0 / 0.90);
+
+    --paper-image: linear-gradient(180deg, #000000 0%, #000000 60%, #020602 100%);
+    --surface-image: linear-gradient(160deg, #000000 0%, #030703 100%);
+    --button-image: linear-gradient(160deg, #0a0f0a 0%, #0e160e 100%);
+    --button-image-hover: linear-gradient(160deg, #0d140d 0%, #143014 100%);
+    --accent-image: linear-gradient(135deg, #00d400 0%, #00ff00 55%, #7cff7c 100%);
+}
+
+/* The ironbow ramp thermal cameras use - black through violet and magenta into
+   orange, and on past yellow to white, which is what separates it from
+   matplotlib's inferno (that one stops at pale yellow). It is the colour iron
+   actually glows as it heats, which is why it reads as temperature without
+   having to be explained.
+   The ramp is split by job rather than sprinkled about: the cool end is
+   structure, so surfaces and edges climb from black through violet, and the hot
+   end is anything that acts or warns - which is also the order of attention it
+   should get. Everything below was chosen against the LIGHTEST stop of the
+   gradient sitting behind it, since that is where a gradient quietly fails. */
+:root[data-theme='ironbow'] {
+    --paper: #000000;
+    --surface: #12002d;
+    --surface-2: #2a0a5e;
+    --ink: #ffffff;
+    --muted: #ffb37a;
+    --hairline: #4b0f6b;
+    --accent: #ff8c00;
+    --accent-strong: #ffd300;
+    --accent-soft: rgb(255 140 0 / 0.18);
+    --accent-ink: #000000;
+    --link: #ffd300;
+    --danger: #ff7a5c;
+    --danger-soft: rgb(255 122 92 / 0.20);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(123 26 110 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(255 140 0 / 0.40);
+    --glass: rgb(0 0 0 / 0.90);
+
+    /* Slices of the one ramp rather than flat samples of it, each surface taking
+       the segment that matches how far forward it sits: the page is the cold
+       floor, a card a short way up it, a button further still, and the button
+       that commits something is up in the heat. The colours above stay as what
+       sits underneath, so nothing depends on the gradients rendering. */
+    --paper-image: linear-gradient(180deg, #000000 0%, #0a0322 60%, #1a0a3c 100%);
+    --surface-image: linear-gradient(160deg, #12002d 0%, #35085c 100%);
+    --button-image: linear-gradient(160deg, #2a0a5e 0%, #4b0f6b 100%);
+    --button-image-hover: linear-gradient(160deg, #3a0a63 0%, #7b1a6e 100%);
+    /* Runs off the end of the ramp into white, the way a thermal camera shows
+       the hottest thing in frame. Starts at the orange-red rather than the
+       magenta below it so black lettering holds up across the whole sweep. */
+    --accent-image: linear-gradient(135deg, #e35d3a 0%, #ff8c00 40%, #ffd300 75%, #ffffff 100%);
+}
+
+/* The rest of the ramp themes. Each is a different colormap run through the
+   same treatment as ironbow above: lightness climbs monotonically from black to
+   white, the cool end is handed to structure and the hot end to anything that
+   acts or warns, and every foreground is picked against the LIGHTEST stop of
+   whatever gradient sits behind it. That one property - lightness only ever
+   going up - is what makes the contrast rule checkable at all, so a ramp that
+   dips (jet, rainbow, turbo) can't be used here however good it looks.
+   All of them are anchored at black and white rather than at their published
+   endpoints, which mostly stop short of both; the hot end reaching pure white
+   is what lets a primary button blow out the way a thermal image does. */
+
+/* matplotlib viridis: violet through indigo and teal to green and yellow. */
+:root[data-theme='viridis'] {
+    --paper: #000000;
+    --surface: #1e0733;
+    --surface-2: #2f1a63;
+    --ink: #ffffff;
+    --muted: #a9dcae;
+    --hairline: #3e4a89;
+    --accent: #35b779;
+    --accent-strong: #8fd744;
+    --accent-soft: rgb(53 183 121 / 0.18);
+    --accent-ink: #000000;
+    --link: #8fd744;
+    --danger: #ff7a5c;
+    --danger-soft: rgb(255 122 92 / 0.20);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(62 74 137 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(53 183 121 / 0.40);
+    --glass: rgb(0 0 0 / 0.90);
+
+    --paper-image: linear-gradient(180deg, #000000 0%, #12031c 60%, #22093a 100%);
+    --surface-image: linear-gradient(160deg, #1e0733 0%, #3a0f56 100%);
+    --button-image: linear-gradient(160deg, #2f1a63 0%, #3e4a89 100%);
+    --button-image-hover: linear-gradient(160deg, #38246f 0%, #31688e 100%);
+    --accent-image: linear-gradient(135deg, #21918c 0%, #35b779 38%, #8fd744 72%, #fde725 88%, #ffffff 100%);
+}
+
+/* seaborn mako: the same shape as ironbow with none of its colours - near-black
+   through deep blue and teal to pale green. */
+:root[data-theme='mako'] {
+    --paper: #000000;
+    --surface: #101a2e;
+    --surface-2: #24345c;
+    --ink: #ffffff;
+    --muted: #9fd0d2;
+    --hairline: #35538a;
+    --accent: #38aaac;
+    --accent-strong: #78cdd1;
+    --accent-soft: rgb(56 170 172 / 0.18);
+    --accent-ink: #000000;
+    --link: #78cdd1;
+    --danger: #ff7a5c;
+    --danger-soft: rgb(255 122 92 / 0.20);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(53 83 138 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(56 170 172 / 0.40);
+    --glass: rgb(0 0 0 / 0.90);
+
+    --paper-image: linear-gradient(180deg, #000000 0%, #04070f 60%, #0a1020 100%);
+    --surface-image: linear-gradient(160deg, #101a2e 0%, #1b2a4a 100%);
+    --button-image: linear-gradient(160deg, #24345c 0%, #35538a 100%);
+    --button-image-hover: linear-gradient(160deg, #2c4478 0%, #357ba2 100%);
+    --accent-image: linear-gradient(135deg, #3c86ae 0%, #38aaac 38%, #78cdd1 70%, #def5e5 90%, #ffffff 100%);
+}
+
+/* matplotlib cividis: built to survive deuteranopia, so it carries only the one
+   blue-to-gold axis and stays legible when that axis is all a reader has. */
+:root[data-theme='cividis'] {
+    --paper: #000000;
+    --surface: #062245;
+    --surface-2: #21386b;
+    --ink: #ffffff;
+    --muted: #bcb693;
+    --hairline: #4a5674;
+    --accent: #c3b369;
+    --accent-strong: #e1cc55;
+    --accent-soft: rgb(195 179 105 / 0.18);
+    --accent-ink: #000000;
+    --link: #e1cc55;
+    --danger: #ff7a5c;
+    --danger-soft: rgb(255 122 92 / 0.20);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(74 86 116 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(195 179 105 / 0.40);
+    --glass: rgb(0 0 0 / 0.90);
+
+    --paper-image: linear-gradient(180deg, #000000 0%, #001029 60%, #00224e 100%);
+    --surface-image: linear-gradient(160deg, #062245 0%, #123570 100%);
+    --button-image: linear-gradient(160deg, #21386b 0%, #3b496c 100%);
+    --button-image-hover: linear-gradient(160deg, #2c4278 0%, #575d6d 100%);
+    --accent-image: linear-gradient(135deg, #8a8678 0%, #a59c74 32%, #c3b369 60%, #fee838 88%, #ffffff 100%);
+}
+
+/* ColorBrewer YlGnBu, reversed so it climbs: navy through blue and teal to
+   green and pale yellow. */
+:root[data-theme='ylgnbu'] {
+    --paper: #000000;
+    --surface: #0a1f52;
+    --surface-2: #1e3a8f;
+    --ink: #ffffff;
+    --muted: #a7d8c9;
+    --hairline: #2a4d9c;
+    --accent: #41b6c4;
+    --accent-strong: #7fcdbb;
+    --accent-soft: rgb(65 182 196 / 0.18);
+    --accent-ink: #000000;
+    --link: #7fcdbb;
+    --danger: #ff7a5c;
+    --danger-soft: rgb(255 122 92 / 0.20);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(42 77 156 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(65 182 196 / 0.40);
+    --glass: rgb(0 0 0 / 0.90);
+
+    --paper-image: linear-gradient(180deg, #000000 0%, #030a20 60%, #081d58 100%);
+    --surface-image: linear-gradient(160deg, #0a1f52 0%, #16307d 100%);
+    --button-image: linear-gradient(160deg, #1e3a8f 0%, #225ea8 100%);
+    --button-image-hover: linear-gradient(160deg, #24479b 0%, #2a6fb8 100%);
+    --accent-image: linear-gradient(135deg, #1d91c0 0%, #41b6c4 35%, #7fcdbb 60%, #c7e9b4 80%, #edf8b1 92%, #ffffff 100%);
+}
+
+/* Dave Green's cubehelix at its default winding, computed from the closed form
+   rather than sampled: lightness rises strictly linearly while the hue spirals
+   right around the wheel, which is why it passes through teal, olive, salmon
+   and lilac without ever dipping. It brightens faster than the others, so the
+   structural band is taken from lower down the helix than elsewhere - a surface
+   any further up leaves mid-ramp text nowhere to go. */
+:root[data-theme='cubehelix'] {
+    --paper: #000000;
+    --surface: #0c0715;
+    --surface-2: #180f26;
+    --ink: #ffffff;
+    --muted: #8f9ec2;
+    --hairline: #192b47;
+    --accent: #c37a72;
+    --accent-strong: #cca5e3;
+    --accent-soft: rgb(195 122 114 / 0.18);
+    --accent-ink: #000000;
+    --link: #cca5e3;
+    --danger: #ff5347;
+    --danger-soft: rgb(255 83 71 / 0.20);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(25 43 71 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(212 135 179 / 0.40);
+    --glass: rgb(0 0 0 / 0.90);
+
+    --paper-image: linear-gradient(180deg, #000000 0%, #08040f 60%, #0c0715 100%);
+    --surface-image: linear-gradient(160deg, #0c0715 0%, #180f26 100%);
+    --button-image: linear-gradient(160deg, #180f26 0%, #192b47 100%);
+    --button-image-hover: linear-gradient(160deg, #16203a 0%, #154f4d 100%);
+    --accent-image: linear-gradient(135deg, #c37a72 0%, #d487b3 28%, #cca5e3 52%, #c1caf3 72%, #cce8f0 88%, #ffffff 100%);
+}
+
+/* No hue at all - the degenerate case of the same rule, and the one place the
+   contrast maths has nothing to hide behind. Danger is the single deliberate
+   break: colour is the only signal that separates a destructive control here,
+   so it cannot also be grey. */
+:root[data-theme='greyscale'] {
+    --paper: #000000;
+    --surface: #161616;
+    --surface-2: #2b2b2b;
+    --ink: #ffffff;
+    --muted: #a0a0a0;
+    --hairline: #444444;
+    --accent: #b4b4b4;
+    --accent-strong: #e0e0e0;
+    --accent-soft: rgb(180 180 180 / 0.18);
+    --accent-ink: #000000;
+    --link: #e0e0e0;
+    --danger: #ff6b5c;
+    --danger-soft: rgb(255 107 92 / 0.20);
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.70), 0 8px 24px -10px rgb(68 68 68 / 0.60);
+    --shadow-pop: 0 4px 10px rgb(0 0 0 / 0.55), 0 18px 44px -12px rgb(180 180 180 / 0.40);
+    --glass: rgb(0 0 0 / 0.90);
+
+    --paper-image: linear-gradient(180deg, #000000 0%, #0a0a0a 60%, #141414 100%);
+    --surface-image: linear-gradient(160deg, #161616 0%, #242424 100%);
+    --button-image: linear-gradient(160deg, #2b2b2b 0%, #3a3a3a 100%);
+    --button-image-hover: linear-gradient(160deg, #383838 0%, #4f4f4f 100%);
+    --accent-image: linear-gradient(135deg, #8a8a8a 0%, #b4b4b4 40%, #e0e0e0 75%, #ffffff 100%);
+}
+
+/* Dark‑mode edges for the hashtag graph - Ironbow's, since that is what an
+   unthemed dark-mode visitor is looking at. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) .HashtagGraphList {
+        --HashtagEdge: rgb(237 105 37 / 0.30);
+    }
+}
+
+:root[data-theme='dark'] .HashtagGraphList {
+    --HashtagEdge: rgb(232 236 233 / 0.22);
+}
+
+/* Edges in each ramp's hot end, so the graph reads as heat against the black. */
+:root[data-theme='ironbow'] .HashtagGraphList {
+    --HashtagEdge: rgb(237 105 37 / 0.30);
+}
+
+:root[data-theme='viridis'] .HashtagGraphList {
+    --HashtagEdge: rgb(53 183 121 / 0.30);
+}
+
+:root[data-theme='mako'] .HashtagGraphList {
+    --HashtagEdge: rgb(56 170 172 / 0.30);
+}
+
+:root[data-theme='cividis'] .HashtagGraphList {
+    --HashtagEdge: rgb(195 179 105 / 0.30);
+}
+
+:root[data-theme='ylgnbu'] .HashtagGraphList {
+    --HashtagEdge: rgb(65 182 196 / 0.30);
+}
+
+:root[data-theme='cubehelix'] .HashtagGraphList {
+    --HashtagEdge: rgb(195 122 114 / 0.30);
+}
+
+:root[data-theme='greyscale'] .HashtagGraphList {
+    --HashtagEdge: rgb(180 180 180 / 0.30);
+}
+

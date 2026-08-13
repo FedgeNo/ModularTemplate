@@ -1,0 +1,93 @@
+# Never serve dotfiles (.env especially - it holds credentials) or SQL dumps.
+# .well-known is exempted so the ACME challenge exemption below can work on
+# newer Apache (2.4.68+), which applies this FilesMatch to the .well-known
+# directory segment during the walk and denies it at the authz phase - which
+# runs BEFORE the mod_rewrite exemption. Anything else under .well-known is
+# still 403'd by the leading-dot RewriteRule further down.
+<FilesMatch "^\.(?!well-known$)|\.sql$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# The stylesheets and scripts are served exactly as they are written, with no
+# build step to shrink them, and they block the first paint - so this is the
+# only thing standing between a reader and the whole of them at full size.
+#
+# Brotli where the browser offers it, since it beats gzip on text by a useful
+# margin, and everything that speaks it also speaks gzip - so the deflate block
+# below still covers every client that doesn't.
+<IfModule mod_brotli.c>
+    AddOutputFilterByType BROTLI_COMPRESS text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+<IfModule mod_headers.c>
+    # The client is a set of ES modules, each imported by name from the last.
+    # Revalidating every one of them before use costs no bytes and a round
+    # trip apiece - which is nothing on a fast connection and seconds on a
+    # slow one, on every visit, forever. So a cached copy is used at once and
+    # checked afterwards: stale-while-revalidate serves what the browser has
+    # and refreshes it in the background, leaving a reader waiting on the
+    # network only the first time they ever see the file.
+    #
+    # The cost is that a script changed by a deploy reaches a returning reader
+    # one page view late. Apache's own ETag still decides what actually
+    # changed, so that view fetches nothing it already has.
+    <FilesMatch "\.(js|css|json)$">
+        Header set Cache-Control "max-age=300, stale-while-revalidate=604800"
+    </FilesMatch>
+
+    <FilesMatch "\.(jpe?g|png|ico)$">
+        Header set Cache-Control "max-age=31536000, immutable"
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteRule ^\.well-known/acme-challenge/ - [L]
+
+    RewriteRule (^|/)\. - [F]
+
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+    RewriteCond %{DOCUMENT_ROOT}/.env -f
+    RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [R=301,L]
+
+    RewriteCond %{THE_REQUEST} \s/+[^?\s]*\.php[\s?] [NC]
+    RewriteRule ^ 404.php [L]
+
+    RewriteRule ^api/([a-zA-Z0-9-]+)$ api/$1.php [L,QSA]
+
+    RewriteRule ^$ index.php [L,QSA]
+
+    RewriteRule ^health$ health.php [L,QSA]
+    RewriteRule ^environment-check$ environment-check.php [L,QSA]
+
+    RewriteRule ^login$ login.php [L,QSA]
+    RewriteRule ^logout$ logout.php [L,QSA]
+    RewriteRule ^signup$ signup.php [L,QSA]
+    RewriteRule ^check-inbox$ check-inbox.php [L,QSA]
+    RewriteRule ^forgot-password$ forgot-password.php [L,QSA]
+    RewriteRule ^reset-password$ reset-password.php [L,QSA]
+    RewriteRule ^settings$ /user-settings [R=301,L,QSA]
+    RewriteRule ^user-settings$ user-settings.php [L,QSA]
+    RewriteRule ^verify-email$ verify-email.php [L,QSA]
+    RewriteRule ^revert-email$ revert-email.php [L,QSA]
+    RewriteRule ^admin/settings$ admin-settings.php [L,QSA]
+    RewriteRule ^admin/tests$ admin-tests.php [L,QSA]
+    RewriteRule ^about$ about.php [L,QSA]
+    RewriteRule ^terms$ terms.php [L,QSA]
+    RewriteRule ^privacy$ privacy.php [L,QSA]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ 404.php [L]
+</IfModule>

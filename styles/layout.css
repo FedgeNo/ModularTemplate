@@ -1,0 +1,205 @@
+/* ============================================================
+   Visual system – layout
+   Page shell: nav, page title, dropdowns, scroll-to-top,
+   body padding, search‑page toggles.
+   ============================================================ */
+
+/* Clears the fixed nav, and only that - exactly, with nothing added. The title
+   is the first thing under it and used to be pinned flush against its lower
+   edge, so any breathing room here would drop it below where it has always sat.
+   It reserved room for the title too when that was a second fixed bar; the
+   title takes its own space in the normal way now. */
+body:has(.MainNavigation) {
+    padding-top: var(--nav-height);
+}
+
+.PageBody {
+    padding: 1rem;
+    padding-inline: var(--content-padding-inline);
+}
+
+/* ---------- Fixed header: nav bar + page title ---------- */
+
+.MainNavigation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-height);
+    background-color: var(--glass);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--hairline);
+    padding: 0.5rem 1rem;
+    padding-inline: var(--content-padding-inline);
+    z-index: 20;
+    align-items: center;
+}
+
+.NavBrand {
+    font-family: var(--display-font);
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    line-height: 1.3;
+    align-self: center;
+}
+
+.NavBrand:hover { color: var(--ink); }
+
+/* On the Messages link in the menu, riding alongside the label rather than
+   positioned against it - the menu is a list of plain links. */
+.NavDropdownMenu a { position: relative; }
+
+.MainNavigation a {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.MainNavigation > div { align-items: center; }
+
+.MainNavigation .NavAccount > a {
+    border-bottom: 1px solid transparent;
+    border-radius: var(--radius-pill);
+}
+
+/* The title is content, not chrome: it sits at the top of <main> and scrolls up
+   out of view with everything below it, leaving the nav as the only thing
+   pinned. The glass and the backdrop blur went with the fixed position - they
+   were there so content could pass underneath, which it no longer does - and so
+   did the full-bleed offsets and its own inline padding, since it now sits in
+   the content column the body already indents. The rule under it stays, as the
+   separation it was drawing is still worth drawing. */
+.PageTitle {
+    position: relative;
+    height: var(--nav-height);
+    margin: 0 0 1rem;
+    line-height: 3rem;
+    border-bottom: 1px solid var(--hairline);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Dropdown menus ---------- */
+
+.NavDropdown { position: relative; }
+.NavDropdownTrigger { cursor: pointer; }
+
+.NavAccountLabel {
+    display: inline-block;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+.NavDropdownMenu {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 11rem;
+    z-index: 20;
+    padding: 0.5rem;
+    border-radius: var(--radius-card);
+    border-top-left-radius: 0;
+    box-shadow: var(--shadow-pop);
+    opacity: 0;
+    transform: translateY(-0.25rem) scale(0.98);
+    transform-origin: top left;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.NavDropdown:hover .NavDropdownMenu,
+.NavDropdown:focus-within .NavDropdownMenu {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.NavAccount .NavDropdownMenu {
+    left: auto;
+    right: 0;
+    min-width: calc(100% + var(--radius-card));
+    border-top-left-radius: var(--radius-card);
+    border-top-right-radius: 0;
+    transform-origin: top right;
+}
+
+.NavDropdownMenu {
+    top: calc(100% + 3px);
+}
+
+.NavDropdownMenu .LogoutForm { margin: 0; }
+
+.NavDropdownMenu .LogoutButton {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 0.625rem;
+    background: none;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+}
+
+.NavDropdownMenu .LogoutButton:hover {
+    background-color: var(--surface-2);
+    color: var(--ink);
+}
+
+/* ---------- Scroll-to-top ---------- */
+
+.ScrollToTopButton {
+    display: none;
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 20;
+    padding: 0.5rem 0.5rem;
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    background-color: var(--surface);
+    box-shadow: var(--shadow-card);
+    color: var(--ink);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+
+.ScrollToTopButton.Scrolled { display: block; }
+
+/* ---------- Build cost ---------- */
+
+/* Pinned into the corner rather than sitting under the last thing on the
+   page: it is a standing readout for one person, not part of what anybody
+   came to read.
+
+   Only once there is room for it beside the content instead of over it. The
+   column is capped at 40rem and centred, so each gutter is (100vw - 40rem)/2,
+   and this needs its 1rem inset plus its own width - measured at 12.8rem for
+   the longest it goes, "Built in 1234.5 ms, 128 queries.". A 70rem window
+   clears that by 12px, which is real but thinner than the webfont's own
+   variation, so the room starts at 72rem and the clearance is 28px. Narrower
+   than that it stays in the flow, where it can overlap nothing.
+
+   The left corner because the right one is the scroll-to-top button's. The
+   max-width is the backstop: a figure longer than the one measured wraps
+   upward rather than growing into the column. */
+@media (min-width: 72rem) {
+    .PageGenerationTime {
+        position: fixed;
+        left: 1rem;
+        bottom: 1rem;
+        max-width: 13rem;
+        margin: 0;
+    }
+}

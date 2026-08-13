@@ -1,0 +1,527 @@
+
+
+/* ============================================================
+   Visual system – components
+   Cards, forms, buttons, dialogs, toasts, and the other shared
+   component styles. Selectors are the PHP/JS class names.
+   ============================================================ */
+
+.NavDropdownMenu {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes mount-in {
+    from { opacity: 0; transform: translateY(0.5rem); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.LoadingSpinner {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.LoadingSpinner::after {
+    content: '';
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid var(--hairline);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+.MountIn {
+    animation: mount-in 0.25s ease;
+}
+
+.SlidingOut {
+    overflow: hidden;
+    opacity: 0;
+    transition: height 0.2s ease, opacity 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .SlidingOut { transition: none; }
+}
+
+/* ---------- A refused field ---------- */
+
+/* Under the input it is about, in the colour everything that has gone wrong
+   wears. Tied to the input by aria-describedby, so it is read out on reaching
+   the box rather than found by hunting - which is the whole point of putting
+   it here instead of in a toast floating at the edge of the screen. */
+.FieldError {
+    color: var(--danger);
+    font-size: 0.8125rem;
+    margin: 0.25rem 0 0;
+}
+
+/* The box itself, so the eye lands on which one before reading why. */
+.InputField :is(input, textarea)[aria-invalid='true'],
+.TextareaField :is(input, textarea)[aria-invalid='true'] {
+    border-color: var(--danger);
+    outline-color: var(--danger);
+}
+
+/* ---------- Skipping the navigation ---------- */
+
+/* Out of the way until somebody tabs to it, then a real control in the corner.
+   Moved off-screen rather than hidden: display:none and visibility:hidden both
+   take it out of the tab order, which is the one thing it must stay in. */
+.SkipLink {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    padding: 0.75rem 1rem;
+    background-color: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--hairline);
+    border-radius: 0 0 var(--radius-card) 0;
+    transform: translateY(-120%);
+}
+
+.SkipLink:focus {
+    transform: translateY(0);
+}
+
+/* The content it lands on is only focusable so the jump lands - it is not a
+   control, and should not draw a ring as though it were. */
+#PageContent:focus {
+    outline: none;
+}
+
+/* ---------- Buttons ---------- */
+
+.Button {
+    background-color: var(--surface-2);
+    background-image: var(--button-image, none);
+    color: var(--ink) !important;
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 0.5rem 1rem;
+    font-weight: 550;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+}
+
+.Button:hover {
+    background-color: color-mix(in srgb, var(--surface-2) 80%, var(--ink) 8%);
+    /* Falls back to the resting image, so a theme with a gradient but no hover
+       variant simply keeps the one it has rather than losing it on hover. */
+    background-image: var(--button-image-hover, var(--button-image, none));
+    color: var(--ink) !important;
+}
+
+.Button:active { transform: scale(0.97); }
+.Button:disabled { opacity: 0.55; cursor: default; transform: none; }
+
+/* Waiting on the server. Disabling alone only dims a control slightly and
+   then nothing happens, which on anything slow reads as a press that did not
+   land - so it pulses for as long as it is working. The animation beats the
+   :disabled opacity above by being an animation, which is the whole reason
+   this is not just another opacity rule. */
+@keyframes throb {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.4; }
+}
+
+.Working {
+    animation: throb 1.1s ease-in-out infinite;
+    cursor: progress;
+}
+
+/* Somebody who has asked for less movement still needs to know it is working,
+   so the pulse becomes a steady dimming rather than nothing at all. */
+@media (prefers-reduced-motion: reduce) {
+    .Working { animation: none; opacity: 0.5; }
+}
+
+/* Forms lay their fields out in a column, and the button that submits one sits
+   at the trailing edge rather than stretching across it. */
+.SubmitButton { align-self: flex-end; }
+
+
+/* A checkbox or radio with a label wrapped round it is a control you press, so
+   it takes the button's own colours and hover and keeps the box inside. The
+   wrapping is what makes the whole of it the target rather than the box alone,
+   so this only claims the ones built that way. */
+label:has(> input[type='checkbox']),
+label:has(> input[type='radio']) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--surface-2);
+    background-image: var(--button-image, none);
+    color: var(--ink);
+    border-radius: var(--radius-pill);
+    padding: 0.5rem 1rem;
+    margin-bottom: 0;
+    font-weight: 550;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+label:has(> input[type='checkbox']):hover,
+label:has(> input[type='radio']):hover {
+    background-color: color-mix(in srgb, var(--surface-2) 80%, var(--ink) 8%);
+    background-image: var(--button-image-hover, var(--button-image, none));
+    color: var(--ink);
+}
+
+a.Button {
+    display: inline-block;
+    text-align: center;
+}
+
+a.Button:hover { color: var(--ink) !important; }
+
+emoji-picker.Active {
+    opacity: 1;
+    pointer-events: auto;
+    display: flex;
+}
+
+.emoji-text {
+    font-size: 1.25rem;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+.emoji-only .emoji-text {
+    font-size: 2.5rem;
+    line-height: 1.3;
+}
+
+/* ---------- Forms (component classes) ---------- */
+
+.CheckboxField {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.CheckboxField input { width: auto; margin: 0; }
+.CheckboxField label { display: inline; margin-bottom: 0; }
+
+.LoginFormFooter {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.TextareaField textarea {
+    width: 100%;
+    resize: vertical;
+}
+
+/* Every wording the button can show, stacked in one cell so the widest of
+   them sets the width once and toggling never resizes it. */
+.ToggleButton {
+    display: inline-grid;
+    grid-template-areas: 'label';
+    place-items: center;
+}
+
+.ToggleButtonLabel { grid-area: label; }
+
+.ToggleButtonLabel.Inactive { visibility: hidden; }
+
+.ProgressBar {
+    display: none;
+    width: 100%;
+    height: 0.4rem;
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    margin-top: 0.5rem;
+    accent-color: var(--accent);
+}
+
+.ProgressBar.Active { display: block; }
+
+label.visually-hidden { margin-bottom: 0; }
+
+/* ---------- Quill editor ---------- */
+
+.ql-toolbar.ql-snow {
+    background-color: var(--surface);
+    border-color: var(--hairline);
+    border-top-left-radius: var(--radius-card);
+    border-top-right-radius: var(--radius-card);
+}
+
+.ql-container.ql-snow {
+    border-color: var(--hairline);
+    border-bottom-left-radius: var(--radius-card);
+    border-bottom-right-radius: var(--radius-card);
+    font-size: 0.9375rem;
+}
+
+.ql-editor {
+    background-color: var(--surface);
+    color: var(--ink);
+    min-height: 4.5rem;
+    border-bottom-left-radius: var(--radius-card);
+    border-bottom-right-radius: var(--radius-card);
+}
+
+.ql-editor.ql-blank::before {
+    color: var(--muted);
+    opacity: 1;
+    font-style: normal;
+    font-size: 0.9375rem;
+}
+
+.ql-snow .ql-stroke { stroke: var(--ink); }
+.ql-snow .ql-fill,
+.ql-snow .ql-stroke.ql-fill { fill: var(--ink); }
+.ql-snow .ql-picker { color: var(--ink); }
+.ql-snow .ql-picker-options {
+    background-color: var(--surface);
+    border-color: var(--hairline);
+}
+
+/* ---------- People ---------- */
+
+.User { display: flex; align-items: flex-start; }
+
+.User h2 { margin-bottom: 0.1rem; }
+
+/* ---------- Search ---------- */
+
+.SearchBox {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.SearchInput {
+    width: 100%;
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;
+}
+
+.SearchInput:focus { box-shadow: none; }
+
+.SearchClearButton {
+    display: none;
+    flex: none;
+    padding: 0 0.25rem;
+    border: none;
+    background: none;
+    color: var(--danger) !important;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.SearchBox.HasQuery .SearchClearButton { display: block; }
+
+/* The words for the language offer, rendered by the server because they are in
+   a language this page is not in. LanguagePrompt.js takes them into a dialog
+   and takes this away; it is never something to read in place. */
+.LanguagePrompt { display: none; }
+
+/* ---------- Confirm dialog ---------- */
+
+.ConfirmDialogOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: color-mix(in srgb, black 45%, transparent);
+    padding: 1rem;
+}
+
+.ConfirmDialogCard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: min(24rem, 100%);
+    box-shadow: var(--shadow-pop);
+}
+
+.ConfirmDialogMessage {
+    color: var(--ink);
+}
+
+.ConfirmDialogInput {
+    resize: vertical;
+}
+
+.ConfirmDialogActions {
+    justify-content: flex-end;
+}
+
+/* ---------- Test results ---------- */
+
+.TestResultsBadge {
+    display: inline-block;
+    align-self: flex-start;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-ctl);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.TestResultsPass {
+    background-color: var(--accent-soft);
+    color: var(--accent-strong);
+}
+
+.TestResultsFail {
+    background-color: var(--danger-soft);
+    color: var(--danger);
+}
+
+.TestResultsOutput {
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: var(--radius-ctl);
+    background-color: var(--surface-2);
+    color: var(--ink);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+/* ---------- Error & error list ---------- */
+
+.Error { color: var(--danger); }
+
+.ErrorList {
+    background-color: var(--danger-soft);
+    border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+    border-radius: var(--radius-ctl);
+    padding: 0.5rem 1rem;
+    list-style: none;
+    margin: 0;
+    color: var(--danger);
+}
+
+/* ---------- Settings sections (fold‑outs) ---------- */
+
+.SettingsSection {
+    border-top: 1px solid var(--hairline);
+}
+
+.SettingsSection:last-of-type {
+    border-bottom: 1px solid var(--hairline);
+}
+
+.SettingsSection > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding-block: 1rem;
+    list-style: none;
+    font-family: var(--display-font);
+    font-weight: 640;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.SettingsSection > summary::-webkit-details-marker {
+    display: none;
+}
+
+.SettingsSection > summary:hover {
+    color: var(--accent);
+}
+
+.SettingsSection > summary::after {
+    content: '';
+    flex: none;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--muted);
+    border-bottom: 2px solid var(--muted);
+    transform: rotate(45deg);
+    transition: transform 0.15s ease;
+}
+
+.SettingsSection[open] > summary::after {
+    transform: rotate(-135deg);
+}
+
+.SettingsSection[open] > :last-child {
+    margin-bottom: 1.25rem;
+}
+
+/* ---------- Toasts ---------- */
+.ToastContainer {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: min(22rem, calc(100vw - 2rem));
+}
+
+.Toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background-color: var(--surface);
+    border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-pop);
+    padding: 0.5rem 1rem;
+    color: var(--ink);
+    font-size: 0.875rem;
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.Toast.Active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.ToastMessage {
+    flex: 1 1 auto;
+}
+
+.ToastCloseButton {
+    background: none;
+    border: none;
+    padding: 0;
+    line-height: 1;
+    color: var(--muted);
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.ToastCloseButton:hover {
+    color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .Toast {
+        transition: none;
+    }
+}

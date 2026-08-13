@@ -1,0 +1,43 @@
+/* ============================================================
+   Visual system – mobile navigation
+   Hamburger menu and mobile overrides.
+   ============================================================ */
+
+.NavToggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.NavHamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    width: 2.25rem;
+    cursor: pointer;
+}
+
+.NavHamburgerBar {
+    width: 1.35rem;
+    height: 2px;
+    border-radius: var(--radius-pill);
+    background-color: var(--ink);
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+.NavToggle:checked ~ .NavHamburger .NavHamburgerBar:nth-child(1) {
+    transform: translateY(calc(0.5rem + 2px)) rotate(45deg);
+}
+
+.NavToggle:checked ~ .NavHamburger .NavHamburgerBar:nth-child(2) {
+    opacity: 0;
+}
+
+.NavToggle:checked ~ .NavHamburger .NavHamburgerBar:nth-child(3) {
+    transform: translateY(calc(-0.5rem - 2px)) rotate(-45deg);
+}

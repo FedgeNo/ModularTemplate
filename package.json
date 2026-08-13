@@ -1,0 +1,11 @@
+{
+    "name": "modular-template",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "test": "node bin/run-js-tests.js"
+    },
+    "devDependencies": {
+        "jsdom": "^26.0.0"
+    }
+}

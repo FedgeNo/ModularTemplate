@@ -1,0 +1,183 @@
+/* ============================================================
+   Visual system – base
+   Element selectors only: resets, typography, forms.
+   ============================================================ */
+
+* {
+    box-sizing: border-box;
+}
+
+/* <search> is a landmark element, but a browser that doesn't know it yet lays
+   it out inline, which would collapse the box it wraps. */
+search {
+    display: block;
+}
+
+html {
+    scroll-snap-type: y proximity;
+    scroll-padding-top: calc(var(--nav-height) + 1rem - 3px);
+}
+
+body {
+    background-color: var(--paper);
+    /* A theme can lay a gradient over its flat colour; the colour stays as the
+       thing underneath it, so a theme that sets no image is unaffected. */
+    background-image: var(--paper-image, none);
+    background-attachment: fixed;
+    color: var(--ink);
+    line-height: 1.55;
+    font-size: 0.9375rem;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+    font-family: var(--display-font);
+    font-weight: 640;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1.05rem; }
+
+a {
+    color: var(--ink);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+a:hover { color: var(--accent); }
+
+p a {
+    color: var(--link);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--link) 35%, transparent);
+    text-underline-offset: 2px;
+}
+
+p a:hover {
+    color: var(--accent-strong);
+    text-decoration-color: currentColor;
+}
+
+/* ---------- Focus & motion ---------- */
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+    html { scroll-behavior: auto; }
+}
+
+/* ---------- Raw form elements ---------- */
+
+fieldset {
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-ctl);
+    padding: 0.5rem;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+legend {
+    font-family: var(--display-font);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    padding: 0;
+    margin-bottom: 0;
+}
+
+label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 550;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+}
+
+input,
+textarea,
+select {
+    background-color: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-pill);
+    padding: 0.5rem;
+    font-size: 0.9375rem;
+    width: 100%;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+textarea {
+    border-radius: var(--radius-ctl);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: color-mix(in srgb, var(--muted) 75%, transparent);
+    opacity: 1;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+    width: auto;
+    accent-color: var(--accent);
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%2368716b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    padding-right: 2.25rem;
+}
+
+input[type='file'] {
+    min-width: 0;
+    padding: 0;
+    border-style: none;
+    color: var(--muted);
+    width: 7rem;
+    font-size: 0.8125rem;
+}
+
+input[type='file']::file-selector-button {
+    background-color: var(--surface-2);
+    background-image: var(--button-image, none);
+    color: var(--ink);
+    border: none;
+    border-radius: var(--radius-pill);
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-weight: 550;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+input[type='file']:hover::file-selector-button {
+    background-color: color-mix(in srgb, var(--surface-2) 80%, var(--ink) 8%);
+    background-image: var(--button-image-hover, var(--button-image, none));
+}
+

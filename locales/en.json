@@ -1,0 +1,250 @@
+{
+    "@plural": [
+        {
+            "category": "one",
+            "is": [
+                1
+            ]
+        },
+        {
+            "category": "other"
+        }
+    ],
+    "DateFormat": {
+        "months": {
+            "1": "January",
+            "2": "February",
+            "3": "March",
+            "4": "April",
+            "5": "May",
+            "6": "June",
+            "7": "July",
+            "8": "August",
+            "9": "September",
+            "10": "October",
+            "11": "November",
+            "12": "December"
+        },
+        "shortMonths": {
+            "1": "Jan",
+            "2": "Feb",
+            "3": "Mar",
+            "4": "Apr",
+            "5": "May",
+            "6": "Jun",
+            "7": "Jul",
+            "8": "Aug",
+            "9": "Sep",
+            "10": "Oct",
+            "11": "Nov",
+            "12": "Dec"
+        },
+        "long": "{month} {day}, {year}",
+        "short": "{month} {day}, {year}",
+        "time": "{hour}:{minute} {meridiem}",
+        "dateAndTime": "{date} {time}",
+        "am": "AM",
+        "pm": "PM",
+        "clock": 12
+    },
+    "RelativeTime": {
+        "justNow": "just now",
+        "minutes": {
+            "one": "{count}m ago",
+            "other": "{count}m ago"
+        },
+        "hours": {
+            "one": "{count}h ago",
+            "other": "{count}h ago"
+        },
+        "days": {
+            "one": "{count}d ago",
+            "other": "{count}d ago"
+        }
+    },
+    "EmailChangeForm": {
+        "legend": "Change Your Email Address",
+        "newEmail": "New Email Address",
+        "currentPassword": "Current Password",
+        "notice": "You'll need to verify the new address before you can keep using the site.",
+        "submit": "Change Email"
+    },
+    "EmailRevertForm": {
+        "submit": "Revert Email Change"
+    },
+    "EmailVerifyForm": {
+        "submit": "Verify Email Address"
+    },
+    "LanguagePrompt": {
+        "question": "Would you like to view the site in English?",
+        "accept": "Yes",
+        "decline": "No thanks"
+    },
+    "LanguageSelector": {
+        "label": "Language",
+        "legend": "Language"
+    },
+    "LoginForm": {
+        "legend": "Log In",
+        "identifier": "Username or Email",
+        "password": "Password",
+        "submit": "Log In"
+    },
+    "LogoutForm": {
+        "submit": "Log Out"
+    },
+    "MailSettingsForm": {
+        "legend": "Outgoing Mail",
+        "fromAddressLabel": "From Address",
+        "fromAddressPlaceholder": "No email can be sent until this is set",
+        "fromNameLabel": "From Name",
+        "hostLabel": "SMTP Host",
+        "portLabel": "SMTP Port",
+        "usernameLabel": "SMTP Username",
+        "passwordLabel": "SMTP Password",
+        "passwordPlaceholder": {
+            "set": "Password is set - leave blank to keep it",
+            "unset": "SMTP password"
+        },
+        "encryptionLabel": "Encryption",
+        "encryptionOptions": {
+            "tls": "TLS (STARTTLS, usual on port 587)",
+            "ssl": "SSL (implicit TLS, usual on port 465)",
+            "none": "None"
+        },
+        "explainer": "Leave the SMTP host blank to send via PHP's mail() instead (not recommended - see README's deliverability section). No email can be sent at all until a \"from\" address is set.",
+        "save": "Save"
+    },
+    "MainNavigation": {
+        "toggleLabel": "Menu",
+        "loggedInAs": "Logged In As {name}",
+        "about": "About",
+        "login": "Log In",
+        "signup": "Sign Up",
+        "userSettings": "User Settings",
+        "adminSettings": "Admin Settings"
+    },
+    "PasswordChangeForm": {
+        "legend": "Change Your Password",
+        "currentPassword": "Current Password",
+        "newPasswordLabel": "New Password",
+        "newPasswordPlaceholder": "At least 8 characters",
+        "confirmPassword": "Confirm New Password",
+        "submit": "Change Password"
+    },
+    "PasswordResetForm": {
+        "legend": "Choose a New Password",
+        "newPasswordLabel": "New Password",
+        "newPasswordPlaceholder": "At least 8 characters",
+        "confirmPasswordLabel": "Confirm New Password",
+        "submit": "Reset Password"
+    },
+    "PasswordResetRequestForm": {
+        "legend": "Reset Your Password",
+        "emailLabel": "Email",
+        "submit": "Send Reset Link"
+    },
+    "ScrollToTopButton": {
+        "label": "Scroll to Top"
+    },
+    "SetupForm": {
+        "siteLegend": "Site",
+        "siteURLLabel": "Site URL",
+        "siteTitleLabel": "Site Title",
+        "mailFromAddressLabel": "Mail From Address",
+        "serverNameConfirmedLabel": "I've set \"ServerName {host}\" and \"UseCanonicalName On\" in my web server's config (only checked if the automated live test can't complete - see README.md's HTTPS section)",
+        "databaseLegend": "Database",
+        "databaseHostLabel": "Database Host",
+        "databasePortLabel": "Database Port",
+        "databaseNameLabel": "Database Name",
+        "databaseAdminUsernameLabel": "Database Admin Username",
+        "databaseAdminPasswordLabel": "Database Admin Password",
+        "submit": "Set Up"
+    },
+    "SignupForm": {
+        "legend": "Create an Account",
+        "usernameLabel": "Username",
+        "usernamePlaceholder": "Lowercase letters, numbers, and _",
+        "emailLabel": "Email",
+        "emailPlaceholder": "Valid email address",
+        "displayName": "Display Name (Optional)",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Password: At least 8 characters",
+        "submit": "Sign Up"
+    },
+    "AboutSettingsForm": {
+        "legend": "About",
+        "description": "Plain text - blank lines separate paragraphs. First paragraph will be used as site description.",
+        "save": "Save"
+    },
+    "TermsSettingsForm": {
+        "legend": "Terms of Service",
+        "description": "Plain text - blank lines separate paragraphs.",
+        "save": "Save"
+    },
+    "PrivacySettingsForm": {
+        "legend": "Privacy Policy",
+        "description": "Plain text - blank lines separate paragraphs.",
+        "save": "Save"
+    },
+    "SitePolicyLinks": {
+        "terms": "Terms of Service",
+        "privacy": "Privacy Policy"
+    },
+    "SkipLink": {
+        "label": "Skip to Content"
+    },
+    "TestResultsBadge": {
+        "passing": "{suite}: Passing",
+        "failing": "{suite}: Failing"
+    },
+    "TestSuitePanel": {
+        "intro": "Run the site's test suite and see the results. It takes a few seconds, so it opens on its own page.",
+        "runLabel": "Run Tests"
+    },
+    "ThemeSelector": {
+        "label": "Theme",
+        "themes": {
+            "system": "Match System",
+            "light": "Plain Light",
+            "dark": "Plain Dark",
+            "sepia": "Sepia",
+            "midnight": "Midnight",
+            "sunset": "Sunset",
+            "rose": "Rose",
+            "forest": "Forest",
+            "ocean": "Ocean",
+            "lavender": "Lavender",
+            "gold": "Gold",
+            "hacker": "Hacker",
+            "ironbow": "Ironbow",
+            "viridis": "Viridis",
+            "mako": "Mako",
+            "cividis": "Cividis",
+            "ylgnbu": "YlGnBu",
+            "cubehelix": "Cubehelix",
+            "greyscale": "Greyscale"
+        }
+    },
+    "VerificationNotice": {
+        "instructions": "Please check your inbox and click the verification link we sent to confirm your email address. If you don't see it, check your junk/spam folder."
+    },
+    "VerificationResendButton": {
+        "label": "Resend Verification Email"
+    },
+    "PageTitle": {
+        "about": "About",
+        "adminSettings": "Admin Settings",
+        "adminTests": "Tests",
+        "checkInbox": "Check Your Inbox",
+        "forgotPassword": "Forgot Password",
+        "login": "Log In",
+        "privacy": "Privacy Policy",
+        "resetPassword": "Reset Password",
+        "revertEmail": "Revert Email Change",
+        "signup": "Sign Up",
+        "terms": "Terms of Service",
+        "userSettings": "User Settings",
+        "verifyEmail": "Verify Email"
+    }
+}
