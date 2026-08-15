@@ -10,6 +10,12 @@ abstract class ItemLoader extends HTMLObject
     public array $items = [];
     public bool $hasMore = false;
 
+    /**
+     * Whether this list pages on scroll. False where sections stand one above
+     * another and a list that grows forever buries everything beneath it.
+     */
+    public bool $scrolls = true;
+
     public function __construct(array|object|null $properties = null)
     {
         parent::__construct($properties);
@@ -56,8 +62,9 @@ abstract class ItemLoader extends HTMLObject
         }
 
         // A list with no next page carries no scroll config, so the client
-        // never binds a scroller that would only ever fetch an empty page.
-        if (!$this -> hasMore) {
+        // never binds a scroller that would only ever fetch an empty page -
+        // nor does one that has been told not to page at all.
+        if (!$this -> hasMore || !$this -> scrolls) {
             unset($this -> attributes['data-infinite-scroll']);
         }
 

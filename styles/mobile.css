@@ -41,3 +41,84 @@
 .NavToggle:checked ~ .NavHamburger .NavHamburgerBar:nth-child(3) {
     transform: translateY(calc(-0.5rem - 2px)) rotate(-45deg);
 }
+
+/* Narrow, or short: a landscape phone has the width for a row of links and
+   nowhere near the height to give one up. */
+@media (max-width: 48rem), (max-height: 32rem) {
+    .NavHamburger {
+        display: flex;
+        position: fixed;
+        top: 0;
+        right: 1rem;
+        height: var(--nav-height);
+        z-index: 30;
+    }
+
+    .MainNavigation {
+        display: block !important;
+        height: var(--nav-height);
+        overflow: hidden;
+        padding-block: 0;
+        /* The rows carry this themselves once the nav is a list of them, so
+           that a row reaches both edges and its own padding is the only thing
+           holding the words off them. */
+        padding-inline: 0;
+    }
+
+    /* Open, the menu is the height of the screen, so everything of it that is
+       not a row it offers stays transparent to a tap and the page underneath
+       keeps them. */
+    .MainNavigation:has(.NavToggle:checked) {
+        pointer-events: none;
+        height: 100dvh;
+        overflow-y: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .MainNavigation:has(.NavToggle:checked) a,
+    .MainNavigation:has(.NavToggle:checked) .LogoutButton,
+    .MainNavigation:has(.NavToggle:checked) .NavHamburger {
+        pointer-events: auto;
+    }
+
+    /* Flattened into one list: the groupings that arrange the nav across a
+       bar have nothing to say once it is a column of rows, and each row
+       wants to be a sibling of every other so they space evenly. */
+    .MainNavigation .NavDropdown,
+    .MainNavigation .NavDropdownMenu,
+    .MainNavigation .NavAccount,
+    .MainNavigation .LogoutForm,
+    .MainNavigation > .d-flex {
+        display: contents !important;
+    }
+
+    .MainNavigation a,
+    .MainNavigation .LogoutButton {
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0.5rem var(--content-padding-inline) !important;
+        border: none !important;
+        /* Square, because a row that reaches both edges has no corners to
+           round without cutting the screen's own. */
+        border-radius: 0 !important;
+        background: none !important;
+        opacity: 1 !important;
+        color: var(--ink) !important;
+        font-weight: 500;
+        font-size: 1rem;
+        text-align: left;
+    }
+
+    .MainNavigation a:hover,
+    .MainNavigation .LogoutButton:hover {
+        background-color: var(--surface-2) !important;
+    }
+
+    .MainNavigation .NavBrand {
+        display: flex;
+        align-items: center;
+        min-height: var(--nav-height);
+    }
+}

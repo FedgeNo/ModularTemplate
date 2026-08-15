@@ -6,9 +6,41 @@
    component styles. Selectors are the PHP/JS class names.
    ============================================================ */
 
+/* ---------- Cards & surfaces ---------- */
+
+/* Everything that reads as a raised surface, listed by what it IS rather than
+   composed into each one's class attribute. .Card is the plain standalone one;
+   .Form covers every form carrying the shared identity (see FormForm), so its
+   subclasses are all included. The rule below it zeroes the trailing margin
+   inside one, and has to name the same set - keep the two lists in step. */
+:is(
+    .Card,
+    .Form, .SearchBox, .ThemeSelector,
+    .NavDropdownMenu, .ConfirmDialogCard,
+    .TestResults, .TestSuitePanel
+) {
+    background-color: var(--surface);
+    background-image: var(--surface-image, none);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-card);
+    padding: 1rem;
+    box-shadow: var(--shadow-card);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
 .NavDropdownMenu {
     max-height: 90vh;
     overflow-y: auto;
+}
+
+:is(
+    .Card,
+    .Form, .SearchBox, .ThemeSelector,
+    .NavDropdownMenu, .ConfirmDialogCard,
+    .TestResults, .TestSuitePanel
+) > *:last-child {
+    margin-bottom: 0;
 }
 
 /* ---------- Animations ---------- */

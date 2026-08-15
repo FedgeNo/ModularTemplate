@@ -25,11 +25,21 @@ abstract class ListSection extends Section
      */
     protected bool $headsEmptyList = false;
 
+    /**
+     * Whether the list pages on scroll. False where sections stand one above
+     * another and a list that grows forever buries everything beneath it.
+     */
+    public bool $scrolls = true;
+
     public function __construct(array|object|null $properties = null)
     {
         parent::__construct($properties);
 
         $this -> list = $this -> list();
+
+        // Handed down rather than passed in, so a section turns paging off
+        // without every list() having to take it as an argument.
+        $this -> list -> scrolls = $this -> scrolls;
     }
 
     /**
