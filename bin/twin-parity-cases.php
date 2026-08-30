@@ -18,6 +18,7 @@ function parityCases(): array
     return [
         'Article' => ['class' => Article::class, 'content' => ['Article']],
         'Button' => ['class' => Button::class, 'properties' => ['type' => 'submit', 'id' => 'save'], 'content' => ['Save']],
+        'ButtonButton' => ['class' => ButtonButton::class, 'content' => ['Shared action']],
         'Div' => ['class' => Div::class, 'content' => ['Division']],
         'Section' => ['class' => Section::class, 'content' => ['Section']],
         'Figure' => ['class' => Figure::class, 'content' => ['Figure']],

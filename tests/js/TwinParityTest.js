@@ -5,20 +5,19 @@ import { resolve } from 'node:path';
 import { TestCase } from './TestCase.js';
 import { canonical_lines, first_difference } from './DOMCanonicalForm.js';
 import { Strings } from '../../scripts/Strings.js';
-import {
-    Anchor, Article, Button, Card, Div, Figure, Heading2, Heading3, Image,
-    ListItem, Paragraph, Section, Span, Table, TableData, TableHeader, TableRow,
-    UnorderedList,
-} from '../../scripts/HTMLObjects.js';
+import * as HTMLObjectExports from '../../scripts/HTMLObjects.js';
 import { RelativeTime } from '../../scripts/RelativeTime.js';
 import { ToggleButton } from '../../scripts/ToggleButton.js';
 
 const projectRoot = resolve(import.meta.dirname, '../..');
 const TWINS = {
-    Anchor, Article, Button, Card, Div, Figure, Heading2, Heading3, Image,
-    ListItem, Paragraph, RelativeTime, Section, Span, Table, TableData,
-    TableHeader, TableRow, ToggleButton, UnorderedList,
+    ...HTMLObjectExports,
+    RelativeTime,
+    ToggleButton,
 };
+const PARITY_EXCLUSIONS = new Map([
+    ['HTMLObject', 'abstract DOM-building base with no tag name, so it cannot render'],
+]);
 
 function useSameWordsAsTheServer() {
     Strings.useLocale(JSON.parse(readFileSync(resolve(projectRoot, 'locales/en.json'), 'utf8')), 'en');
@@ -34,6 +33,29 @@ const tests = {
     'every server case names a client twin'() {
         const missing = serverCases.map(([, item]) => item.class).filter(name => !TWINS[name]);
         TestCase.assertEquals('', [...new Set(missing)].join(', '));
+    },
+    'every exported HTML object is covered or deliberately excluded'() {
+        const exportedClassNames = Object.entries(HTMLObjectExports)
+            .filter(([, exported]) => typeof exported === 'function')
+            .map(([name]) => name);
+        const coveredClassNames = new Set(serverCases.map(([, item]) => item.class));
+        const uncovered = exportedClassNames.filter(name =>
+            !coveredClassNames.has(name) && !PARITY_EXCLUSIONS.has(name)
+        );
+        const staleExclusions = [...PARITY_EXCLUSIONS.keys()].filter(name =>
+            !Object.hasOwn(HTMLObjectExports, name)
+        );
+        const failures = [];
+
+        if (uncovered.length > 0) {
+            failures.push('exported classes without parity cases: ' + uncovered.join(', '));
+        }
+
+        if (staleExclusions.length > 0) {
+            failures.push('parity exclusions that are no longer exported: ' + staleExclusions.join(', '));
+        }
+
+        TestCase.assertEquals('', failures.join('; '));
     },
 };
 
