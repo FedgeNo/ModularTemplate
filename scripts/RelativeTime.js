@@ -2,6 +2,7 @@ import { ClientConfig } from '/scripts/ClientConfig.js';
 import { DateFormat } from '/scripts/DateFormat.js';
 import { parse_server_date } from '/scripts/utils.js';
 import { Strings } from '/scripts/Strings.js';
+import { HTMLObject } from '/scripts/HTMLObjects.js';
 
 /**
  * Single source of truth for relative‑time display and periodic refresh.
@@ -17,7 +18,23 @@ import { Strings } from '/scripts/Strings.js';
  * module, so that registration happens after Strings.load() has resolved and
  * the first render already has the language's own words to say.
  */
-export class RelativeTime {
+export class RelativeTime extends HTMLObject {
+    static tagName = 'time';
+    static className = 'RelativeTime';
+    static properties = { dateString: null };
+
+    constructor(dateString = null) {
+        super({ dateString });
+    }
+
+    toDOM() {
+        this.attributes.datetime = parse_server_date(this.dateString)
+            .toISOString()
+            .replace(/\.\d{3}Z$/, '+00:00');
+        this.addContent(RelativeTime.dateAndTime(this.dateString));
+
+        return super.toDOM();
+    }
     // Offset between server time and local time, computed once at module load.
     static #serverTimeOffset =
         (typeof ClientConfig.get('serverTime') === 'number'

@@ -13,27 +13,39 @@
  * turns "Post" into a slab. The widths are never written down, so relabelling
  * or translating a button needs nothing here.
  */
-export class ToggleButton {
+import { ButtonButton, Span } from '/scripts/HTMLObjects.js';
+
+class ToggleButtonLabel extends Span {
+    static className = 'ToggleButtonLabel';
+
+    constructor(text, inactive) {
+        super();
+        this.class = inactive ? 'Inactive' : null;
+        this.addContent(text);
+    }
+}
+
+export class ToggleButton extends ButtonButton {
+    static className = 'ToggleButton';
+    static properties = { labels: [] };
+
+    constructor(labels = [], className = null) {
+        super({ labels });
+        this.class = className;
+    }
+
+    toDOM() {
+        this.labels.forEach((label, index) => this.addContent(new ToggleButtonLabel(label, index !== 0)));
+        return super.toDOM();
+    }
+
     /** The stand-in a count-carrying label reserves room for. Mirrors ToggleButton.php. */
     /**
      * @param {string[]} labels every wording it can show, the first to start with
      * @param {string} className its own identity, beside Button and ToggleButton
      */
     static build(labels, className) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'Button ToggleButton ' + className;
-
-        for (const text of labels) {
-            const label = document.createElement('span');
-            label.className = 'ToggleButtonLabel';
-            label.textContent = text;
-            button.appendChild(label);
-        }
-
-        ToggleButton.select(button, labels[0]);
-
-        return button;
+        return new ToggleButton(labels, className).toDOM();
     }
 
     /** Shows this wording. The rest stay where they are, holding the width. */
