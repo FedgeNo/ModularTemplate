@@ -16,6 +16,8 @@ declare(strict_types=1);
 #[\AllowDynamicProperties]
 abstract class DOMObject
 {
+    protected const HYDRATION_EXCLUSIONS = ['tagName', 'attributes', 'contents'];
+
     protected static \DOMDocument $document;
 
     public static function currentDocument(): \DOMDocument
@@ -43,7 +45,7 @@ abstract class DOMObject
     {
         if ($properties !== null) {
             foreach (is_array($properties) ? $properties : get_object_vars($properties) as $name => $value) {
-                if (in_array($name, ['tagName', 'class', 'attributes', 'contents', 'rendered', 'items', 'contentType'], true)) {
+                if (in_array($name, self::hydrationExclusions(), true)) {
                     continue;
                 }
 
@@ -52,6 +54,33 @@ abstract class DOMObject
                 }
             }
         }
+    }
+
+    /**
+     * Combines the properties each level of this object's hierarchy owns and
+     * keeps out of generic hydration. A redeclared constant ordinarily hides
+     * its parent's value; reflecting each declaring class lets a descendant
+     * contribute exclusions without having to repeat the inherited ones.
+     */
+    private static function hydrationExclusions(): array
+    {
+        static $cache = [];
+
+        if (isset($cache[static::class])) {
+            return $cache[static::class];
+        }
+
+        $exclusions = [];
+
+        for ($class = new \ReflectionClass(static::class); $class !== false; $class = $class -> getParentClass()) {
+            $constant = $class -> getReflectionConstant('HYDRATION_EXCLUSIONS');
+
+            if ($constant !== false && $constant -> getDeclaringClass() -> getName() === $class -> getName()) {
+                $exclusions = array_merge($exclusions, $constant -> getValue());
+            }
+        }
+
+        return $cache[static::class] = array_values(array_unique($exclusions));
     }
 
     public function addContents(array $items): void

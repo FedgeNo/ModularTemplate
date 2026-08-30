@@ -120,6 +120,30 @@ class HTMLObjectTest extends TestCase
 
         $this -> assertNull($div -> class);
     }
+
+    public function testEveryClassMayAddItsOwnHydrationExclusions(): void
+    {
+        $object = new HydrationLeafFake([
+            'tagName' => 'aside',
+            'attributes' => ['hidden' => 'hidden'],
+            'contents' => ['injected'],
+            'class' => 'Injected',
+            'rendered' => true,
+            'baseInternal' => 'injected',
+            'leafInternal' => 'injected',
+            'data' => 'hydrated',
+        ]);
+
+        $element = $this -> elementFor($object);
+
+        $this -> assertSame('div', $element -> tagName);
+        $this -> assertFalse($element -> hasAttribute('hidden'));
+        $this -> assertSame('', $element -> textContent);
+        $this -> assertSame('HydrationBaseFake HydrationLeafFake', $element -> getAttribute('class'));
+        $this -> assertSame('base', $object -> baseInternal);
+        $this -> assertSame('leaf', $object -> leafInternal);
+        $this -> assertSame('hydrated', $object -> data);
+    }
 }
 
 /** Three levels: one names itself, one renames its own level, one names nothing. */
@@ -135,4 +159,20 @@ class ChainMiddleFake extends ChainBaseFake
 
 class ChainLeafFake extends ChainMiddleFake
 {
+}
+
+class HydrationBaseFake extends Div
+{
+    protected const HYDRATION_EXCLUSIONS = ['baseInternal'];
+
+    public ?string $class = 'HydrationBaseFake';
+    public string $baseInternal = 'base';
+    public string $data = 'original';
+}
+
+class HydrationLeafFake extends HydrationBaseFake
+{
+    protected const HYDRATION_EXCLUSIONS = ['leafInternal'];
+
+    public string $leafInternal = 'leaf';
 }

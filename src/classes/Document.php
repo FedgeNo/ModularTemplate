@@ -10,6 +10,8 @@ declare(strict_types=1);
 // echoes that serialization.
 abstract class Document extends DOMObject
 {
+    protected const HYDRATION_EXCLUSIONS = ['contentType'];
+
     public string $contentType = '';
 
     abstract public function __toString(): string;

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 abstract class ItemLoader extends HTMLObject
 {
+    protected const HYDRATION_EXCLUSIONS = ['items'];
+
     public const PAGE_SIZE = 20;
 
     public int $offset = 0;

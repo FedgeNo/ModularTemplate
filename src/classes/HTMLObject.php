@@ -14,6 +14,8 @@ declare(strict_types=1);
 // DOMObject's uninitialized $tagName is what turns forgetting into an error.
 abstract class HTMLObject extends DOMObject
 {
+    protected const HYDRATION_EXCLUSIONS = ['class', 'rendered'];
+
     public ?string $id = null;
 
     // What this element IS. Chained down the class hierarchy by
