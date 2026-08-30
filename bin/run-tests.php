@@ -13,6 +13,32 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
+if (in_array('--help', $argv ?? [], true) || in_array('-h', $argv ?? [], true)) {
+    echo <<<'USAGE'
+Usage: php bin/run-tests.php [--no-db] [--only=ClassName[,ClassName...]]
+
+Runs discovered TestCase subclasses and exits non-zero on any failure.
+
+  --no-db          Skip database-backed tests even when run as root.
+  --only=A,B        Run only the named test classes.
+  --help            Show this message and exit.
+
+USAGE;
+    exit(0);
+}
+
+$skip_database = in_array('--no-db', $argv ?? [], true);
+$only_classes = null;
+
+foreach ($argv ?? [] as $argument) {
+    if (str_starts_with($argument, '--only=')) {
+        $only_classes = array_values(array_filter(array_map(
+            'trim',
+            explode(',', substr($argument, strlen('--only=')))
+        )));
+    }
+}
+
 spl_autoload_register(function (string $class): void {
     $file = __DIR__ . '/../src/classes/' . $class . '.php';
 
@@ -52,6 +78,22 @@ $test_classes = array_filter(
 
 sort($test_classes);
 
+if ($only_classes !== null) {
+    if ($only_classes === []) {
+        fwrite(STDERR, "--only requires at least one class name (e.g. --only=UserTest).\n");
+        exit(1);
+    }
+
+    $unknown = array_diff($only_classes, $test_classes);
+
+    if ($unknown !== []) {
+        fwrite(STDERR, 'Unknown --only class(es): ' . implode(', ', $unknown) . ".\n");
+        exit(1);
+    }
+
+    $test_classes = array_values(array_intersect($test_classes, $only_classes));
+}
+
 if ($test_classes === []) {
     fwrite(STDERR, "No test classes found under tests/ (expected files named *Test.php defining a class extending TestCase).\n");
     exit(1);
@@ -67,7 +109,7 @@ $db_test_classes = array_values(array_filter(
 ));
 $run_classes = array_values(array_diff($test_classes, $db_test_classes));
 
-$running_as_root = trim((string) shell_exec('id -u 2>/dev/null')) === '0';
+$running_as_root = function_exists('posix_geteuid') && posix_geteuid() === 0;
 
 // A whole class stood down counts as every test in it, not as one line. A
 // summary saying four were skipped while several hundred silently did not run
@@ -78,18 +120,43 @@ $test_method_count = static fn (string $class): int => count(array_filter(
 ));
 
 $skipped_classes = [];
+$database_setup_failed = false;
 
-if ($db_test_classes !== [] && $running_as_root && TestDatabase::setUp()) {
+// Capture the configured name, then point ordinary tests at a database name
+// created uniquely for this process and guaranteed not to exist. A test that
+// forgot to extend DatabaseTestCase now fails loudly instead of reaching the
+// configured application database.
+$live_database = (string) Config::get('database');
+$guard_database = '__tests_must_not_connect_' . getmypid() . '_' . bin2hex(random_bytes(6));
+putenv('DB_HOST=localhost');
+putenv('DB_USERNAME=root');
+putenv('DB_PASSWORD=');
+putenv('DB_DATABASE=' . $guard_database);
+Config::reload();
+
+$refuse_live_database = static function () use ($live_database): void {
+    if ($live_database === '' || (string) Config::get('database') !== $live_database) {
+        return;
+    }
+
+    fwrite(STDERR, "\nThe tests are pointed at the configured application database ({$live_database}). Stopping.\n");
+    exit(1);
+};
+
+$refuse_live_database();
+
+if ($db_test_classes !== [] && $running_as_root && !$skip_database && TestDatabase::setUp($live_database)) {
     register_shutdown_function([TestDatabase::class, 'tearDown']);
     $run_classes = array_merge($run_classes, $db_test_classes);
     sort($run_classes);
 } elseif ($db_test_classes !== []) {
+    $database_setup_failed = $running_as_root && !$skip_database;
     $skipped_classes = [
         'classes' => count($db_test_classes),
         'tests' => array_sum(array_map($test_method_count, $db_test_classes)),
-        'reason' => $running_as_root
-            ? 'test database setup failed, see above'
-            : 're-run with sudo to include them',
+        'reason' => $skip_database
+            ? 'database-backed tests were disabled by --no-db'
+            : ($running_as_root ? 'test database setup failed, see above' : 're-run with sudo to include them'),
     ];
 
     echo 'Skipping ' . $skipped_classes['tests'] . ' test(s) in ' . $skipped_classes['classes']
@@ -103,6 +170,8 @@ $timings = [];
 $started_at = microtime(true);
 
 foreach ($run_classes as $class) {
+    $refuse_live_database();
+
     $instance = new $class();
     $methods = array_filter(
         get_class_methods($class),
@@ -111,13 +180,30 @@ foreach ($run_classes as $class) {
 
     sort($methods);
 
+    $reflection = new \ReflectionClass($class);
+    $set_up = $reflection -> hasMethod('setUp') ? $reflection -> getMethod('setUp') : null;
+
     foreach ($methods as $method) {
         $total++;
         $label = $class . '::' . $method;
+        $superglobals = [
+            'server' => $_SERVER,
+            'cookie' => $_COOKIE,
+            'get' => $_GET,
+            'post' => $_POST,
+            'request' => $_REQUEST,
+            'files' => $_FILES,
+            'env' => $_ENV,
+            'session' => $_SESSION ?? null,
+        ];
 
         $test_started_at = microtime(true);
 
         try {
+            if ($set_up !== null) {
+                $set_up -> invoke($instance);
+            }
+
             $instance -> $method();
             $timings[$label] = microtime(true) - $test_started_at;
             echo "  \033[32mPASS\033[0m  {$label}\n";
@@ -132,6 +218,20 @@ foreach ($run_classes as $class) {
         } catch (\Throwable $exception) {
             echo "  \033[31mERROR\033[0m {$label}\n";
             $failures[] = ['label' => $label, 'message' => get_class($exception) . ': ' . $exception -> getMessage()];
+        } finally {
+            $_SERVER = $superglobals['server'];
+            $_COOKIE = $superglobals['cookie'];
+            $_GET = $superglobals['get'];
+            $_POST = $superglobals['post'];
+            $_REQUEST = $superglobals['request'];
+            $_FILES = $superglobals['files'];
+            $_ENV = $superglobals['env'];
+
+            if ($superglobals['session'] === null) {
+                unset($_SESSION);
+            } else {
+                $_SESSION = $superglobals['session'];
+            }
         }
     }
 }
@@ -189,4 +289,4 @@ $ran = $total - count($skipped);
 $passed = $ran - count($failures);
 echo "{$passed}/{$ran} passed" . ($skipped_total > 0 ? ', ' . $skipped_total . ' skipped' : '') . " ({$elapsed_ms}ms)\n";
 
-exit($failures === [] ? 0 : 1);
+exit($failures === [] && !$database_setup_failed ? 0 : 1);

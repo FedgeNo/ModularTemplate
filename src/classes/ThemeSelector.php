@@ -5,7 +5,6 @@ declare(strict_types=1);
 class ThemeSelector extends Div
 {
     public ?string $class = 'ThemeSelector';
-    public array $mixins = ['d-flex', 'flex-column', 'gap-2'];
 
     /**
      * The stored identifiers, in the order the menu offers them. What each is

@@ -15,8 +15,12 @@ class EmailVerification
      */
     public static function sendFor(User $user): bool
     {
-        $token = self::create((int) $user -> userId);
+        return self::sendMail($user, self::create((int) $user -> userId));
+    }
 
+    /** Sends a token created separately, so callers can create it transactionally. */
+    public static function sendMail(User $user, string $token): bool
+    {
         $verify_url = ServerURL::absolute('/verify-email?token=' . $token);
 
         $name = $user -> title ?: $user -> slug;
@@ -92,7 +96,7 @@ UPDATE `Users`
 ', 'ii', $verified, $user_id);
     }
 
-    private static function create(int $user_id): string
+    public static function create(int $user_id): string
     {
         $token = bin2hex(random_bytes(32));
         $token_hash = hash('sha256', $token);

@@ -31,7 +31,7 @@ abstract class DOMObject
      * Seeds declared data properties from an array or object: a key naming a
      * property this class declares is copied on, any other key ignored, and
      * never the element's own structure or identity - its tag, attributes,
-     * contents, CSS class, mixins, one-shot render flag, list of items, or
+     * contents, CSS class, one-shot render flag, list of items, or
      * content type.
      * Handing it a wider source (a whole User, a page) therefore only ever
      * transfers data properties, never changes what the object is or how it
@@ -43,7 +43,7 @@ abstract class DOMObject
     {
         if ($properties !== null) {
             foreach (is_array($properties) ? $properties : get_object_vars($properties) as $name => $value) {
-                if (in_array($name, ['tagName', 'class', 'mixins', 'attributes', 'contents', 'rendered', 'items', 'contentType'], true)) {
+                if (in_array($name, ['tagName', 'class', 'attributes', 'contents', 'rendered', 'items', 'contentType'], true)) {
                     continue;
                 }
 

@@ -37,30 +37,9 @@ class FormFormTest extends TestCase
         $this -> assertNull($this -> renderedClassFor(Form::class));
     }
 
-    /**
-     * The point of the shared identity is that no form has to compose the card
-     * look itself - one that starts doing so again would be styled twice, and by
-     * two different rules.
-     */
-    public function testNoSharedFormComposesTheCardLookItself(): void
+    public function testHTMLObjectsHaveNoMixinProperty(): void
     {
-        $offenders = [];
-
-        foreach (glob(__DIR__ . '/../src/classes/*.php') ?: [] as $file) {
-            $class = basename($file, '.php');
-
-            if (!class_exists($class) || !is_subclass_of($class, FormForm::class)) {
-                continue;
-            }
-
-            $mixins = (new \ReflectionClass($class)) -> getDefaultProperties()['mixins'] ?? [];
-
-            if (in_array('Card', $mixins, true)) {
-                $offenders[] = $class;
-            }
-        }
-
-        $this -> assertSame([], $offenders, 'these forms compose Card on top of the shared .Form look');
+        $this -> assertFalse(property_exists(HTMLObject::class, 'mixins'));
     }
 
     /**

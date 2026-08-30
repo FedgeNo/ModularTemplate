@@ -5,7 +5,6 @@ declare(strict_types=1);
 class MainNavigation extends Nav
 {
     public ?string $class = 'MainNavigation';
-    public array $mixins = ['d-flex', 'gap-4'];
 
     public function toDOM(): \DOMElement
     {
@@ -36,11 +35,9 @@ class MainNavigation extends Nav
 
         $brand = new NavBrand(ServerURL::absolute('/'), Config::get('siteTitle'));
 
-        $site_links = new Div();
-        $site_links -> mixins = ['d-flex', 'gap-4'];
+        $site_links = new MainNavigationSiteLinks();
 
-        $account_links = new NavAccount();
-        $account_links -> mixins = ['d-flex', 'gap-4', 'ms-auto'];
+        $account_links = new MainNavigationAccountLinks();
 
         // Desktop: a hover-flyout of the main menu hangs off the brand. Mobile:
         // the same links render inline inside the toggled menu - one set of link

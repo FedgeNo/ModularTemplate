@@ -21,6 +21,8 @@ body:has(.MainNavigation) {
 /* ---------- Fixed header: nav bar + page title ---------- */
 
 .MainNavigation {
+    display: flex;
+    gap: 1.5rem;
     position: fixed;
     top: 0;
     left: 0;
@@ -34,6 +36,17 @@ body:has(.MainNavigation) {
     padding-inline: var(--content-padding-inline);
     z-index: 20;
     align-items: center;
+}
+
+.MainNavigationSiteLinks {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.MainNavigationAccountLinks {
+    display: flex;
+    gap: 1.5rem;
+    margin-inline-start: auto;
 }
 
 .NavBrand {

@@ -88,7 +88,8 @@
     .MainNavigation .NavDropdownMenu,
     .MainNavigation .NavAccount,
     .MainNavigation .LogoutForm,
-    .MainNavigation > .d-flex {
+    .MainNavigation > .MainNavigationSiteLinks,
+    .MainNavigation > .MainNavigationAccountLinks {
         display: contents !important;
     }
 

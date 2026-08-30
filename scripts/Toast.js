@@ -2,7 +2,7 @@ export class Toast {
     static container = null;
 
     static getContainer() {
-        if (!Toast.container) {
+        if (!Toast.container || !Toast.container.isConnected) {
             Toast.container = document.createElement('div');
             Toast.container.className = 'ToastContainer';
             document.body.appendWithSpace(Toast.container);

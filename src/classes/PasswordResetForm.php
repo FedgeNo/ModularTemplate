@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 class PasswordResetForm extends FormForm
 {
-    public array $mixins = ['d-flex', 'flex-column', 'gap-2'];
     public string $token;
 
     public function __construct(string $token)

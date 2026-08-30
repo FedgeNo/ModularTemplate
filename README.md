@@ -42,7 +42,8 @@ clone and start building features that fit the house style.
 - PHP 8.1+ (web SAPI + CLI) with `mysqli`, `curl`, `dom`, `libxml`,
   `mbstring`
 - MySQL or MariaDB
-- Apache with `mod_rewrite` (the shipped `.htaccess` handles routing), or an
+- Apache with `mod_rewrite` and `mod_authz_core` (the shipped `.htaccess`
+  handles routing and default-deny access to the working tree), or an
   equivalent nginx config of your own
 - HTTPS - the site refuses to serve over plain HTTP. For a real domain use
   Let's Encrypt (`certbot`); for local development use
@@ -88,7 +89,8 @@ The short version (the long one is `CLAUDE.md`):
   gets paging for free via `InfiniteScroller.js`.
 - Schema changes go in `schema.sql` plus an `APP_VERSION` bump.
 - Tests go in `tests/` (PHP) and `tests/js/` (JS); both runners discover
-  them by naming convention.
+  them by naming convention. Use `php bin/run-tests.php --only=ClassTest` for
+  a focused PHP run and `--no-db` to explicitly skip database-backed cases.
 
 ## License
 

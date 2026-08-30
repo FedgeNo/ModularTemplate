@@ -11,8 +11,6 @@ declare(strict_types=1);
  */
 abstract class SiteInfoSettingsForm extends FormForm
 {
-    public array $mixins = ['d-flex', 'flex-column', 'gap-2'];
-
     /** The POST field / Settings name this form edits. */
     protected string $settingName = '';
 

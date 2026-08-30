@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 class SignupForm extends FormForm
 {
-    public array $mixins = ['d-flex', 'flex-column', 'gap-2'];
-
     public function toDOM(): \DOMElement
     {
         $words = Strings::for(self::class);
@@ -24,7 +22,6 @@ class SignupForm extends FormForm
         // until there's something to report, and announced politely so a
         // screen reader hears the verdict without it interrupting typing.
         $availability = new UsernameAvailability();
-        $availability -> mixins = ['text-sm'];
         $availability -> attributes['aria-live'] = 'polite';
         $fields -> addContent($availability);
 

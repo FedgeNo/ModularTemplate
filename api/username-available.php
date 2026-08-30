@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/api-init.php';
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    JSONResponse::error('Method not allowed', 405) -> send();
-}
-
-$payload = json_decode((string) file_get_contents('php://input'), true);
+$payload = json_decode(API_REQUEST_BODY, true);
 $payload = is_array($payload) ? $payload : [];
 
 // The same normalisation sign-up applies, so this answers for the name that

@@ -68,6 +68,39 @@ export default {
             TestCase.assertEquals(7, Number(sent.userId), 'the selection being paged was left out of the request');
             TestCase.assertEquals(2, sent.offset, 'the offset should be the number of items already shown');
         },
+        async 'a response that arrives after invalidate() is discarded'() {
+            const original_fetch = globalThis.fetch;
+            let resolve_load;
+
+            globalThis.fetch = () => new Promise((resolve) => {
+                resolve_load = () => resolve(new Response(JSON.stringify({
+                    response: { items: [{}], hasMore: true },
+                }), { status: 200 }));
+            });
+
+            const list = document.createElement('ul');
+            document.body.appendWithSpace(list);
+            const scroller = InfiniteScroller.create(list, {
+                endpoint: '/api/search',
+                renderItem: () => item_element(),
+                countOffset: () => 0,
+            });
+
+            try {
+                window.dispatchEvent(new window.Event('scroll'));
+                await new Promise((resolve) => setTimeout(resolve, 0));
+
+                scroller.invalidate();
+                resolve_load();
+                await new Promise((resolve) => setTimeout(resolve, 0));
+
+                TestCase.assertEquals(0, list.querySelectorAll('.Item').length);
+            } finally {
+                globalThis.fetch = original_fetch;
+                scroller.destroy();
+                list.remove();
+            }
+        },
     }
 };
 

@@ -19,7 +19,6 @@ declare(strict_types=1);
 class PageGenerationTime extends Paragraph
 {
     public ?string $class = 'PageGenerationTime';
-    public array $mixins = ['muted', 'text-sm'];
 
     /** Whether this reader is the one it is for. */
     public static function isForViewer(): bool

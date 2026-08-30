@@ -18,5 +18,14 @@ export default {
             TestCase.assertFalse(toast.classList.contains('Active'));
             toast.remove();
         },
+        'show() replaces a cached container removed with the document body'() {
+            Toast.show('First');
+            document.body.replaceChildren();
+
+            const toast = Toast.show('Second');
+
+            TestCase.assertTrue(toast.isConnected);
+            toast.remove();
+        },
     }
 };

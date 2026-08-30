@@ -112,6 +112,9 @@ export class Search {
         // The list may have only just been built; bind the scroller to it now.
         this._ensureScroller();
 
+        // A scroll page for the previous query may still be in flight.
+        this.scroller?.invalidate();
+
         this.resultsContainer.replaceChildren();
 
         // Extracted before the callback runs, and handed to it: every endpoint

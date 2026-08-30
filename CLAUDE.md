@@ -24,6 +24,11 @@ rather than deleting features out of it.
 - **Run the PHP test suite:** `php bin/run-tests.php` - hand-rolled,
   reflection-based (no PHPUnit). A test is any `public function test*()` on a
   `tests/*Test.php` class extending `TestCase`. Exits non-zero on failure.
+- **Run selected PHP tests:** `php bin/run-tests.php --only=ClassTest,OtherTest`.
+  Use `--no-db` to force a filesystem/unit-only run even as root; `--help`
+  documents the runner. The runner points ordinary tests at a deliberately
+  nonexistent database so a test that forgot `DatabaseTestCase` cannot touch
+  the configured application database.
 - **Run DB-backed tests too:** `sudo php bin/run-tests.php` -
   `DatabaseTestCase` subclasses build and drop a throwaway database (needs
   the DB root account), so they're silently skipped when not run as root.
@@ -136,10 +141,10 @@ content just works.
   userId 1; admin-only actions check `Auth::id() === 1` directly. **DB-backed
   search endpoints must be auth-gated** even when the underlying content is
   public - an open full-text/LIKE endpoint is a DDoS hazard.
-- **Every state-changing `api/` endpoint must require POST.** `init.php`'s
-  centralized CSRF check only fires on POST, so a GET-reachable mutator would
-  bypass CSRF entirely - the standard guard is an early
-  `if ($_SERVER['REQUEST_METHOD'] !== 'POST') { ... 405 ... }`.
+- **Every `api/` endpoint is POST-only.** `api/api-init.php` enforces the method
+  before endpoint code runs, caps the shared request body at 24 KiB, and
+  accepts a flat JSON object by default. Define `API_ALLOWS_NESTED_JSON` before
+  requiring it only for an endpoint that deliberately needs nested values.
 - **Rate-limit** anything a stranger can make expensive (`RateLimiter`), keyed
   by client IP and - for guessable credentials - by the account too.
 

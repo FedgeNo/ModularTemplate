@@ -97,7 +97,7 @@ export class Dialog {
             card.appendWithSpace(text);
 
             const actions = document.createElement('div');
-            actions.className = 'ConfirmDialogActions d-flex gap-2';
+            actions.className = 'ConfirmDialogActions';
 
             const cancelButton = document.createElement('button');
             cancelButton.type = 'button';
@@ -167,7 +167,7 @@ export class Dialog {
             card.appendWithSpace(text);
 
             const actions = document.createElement('div');
-            actions.className = 'ConfirmDialogActions d-flex gap-2';
+            actions.className = 'ConfirmDialogActions';
 
             const confirmButton = document.createElement('button');
             confirmButton.type = 'button';
@@ -243,7 +243,7 @@ export class Dialog {
             card.appendWithSpace(input);
 
             const actions = document.createElement('div');
-            actions.className = 'ConfirmDialogActions d-flex gap-2';
+            actions.className = 'ConfirmDialogActions';
 
             const cancelButton = document.createElement('button');
             cancelButton.type = 'button';

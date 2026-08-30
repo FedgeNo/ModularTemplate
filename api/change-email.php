@@ -4,19 +4,13 @@ declare(strict_types=1);
 
 require __DIR__ . '/api-init.php';
 
-// Every /api/ endpoint requires POST - init.php's centralized CSRF check only
-// covers POST requests, so a GET-reachable endpoint would bypass it.
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    JSONResponse::error('Method not allowed', 405) -> send();
-}
-
 if (!Auth::check()) {
     JSONResponse::error('Not logged in', 401) -> send();
 }
 
 $current_user = Auth::user();
 
-$payload = json_decode((string) file_get_contents('php://input'), true);
+$payload = json_decode(API_REQUEST_BODY, true);
 $payload = is_array($payload) ? $payload : [];
 $new_email = trim((string) ($payload['newEmail'] ?? ''));
 $current_password = (string) ($payload['currentPassword'] ?? '');
@@ -82,12 +76,21 @@ $previous_email = (string) $current_user -> email;
 // back behind the verification gate until then.
 $unverified = 0;
 
+// The address and both recovery tokens land together. Mail is sent only after
+// the transaction commits, so SMTP never holds the database row lock open.
 try {
-    DB::run('
+    [$verify_token, $revert_token] = DB::transaction(function () use ($new_email, $unverified, $current_user, $previous_email): array {
+        DB::run('
 UPDATE `Users`
     SET `email` = ?, `verified` = ?
     WHERE `userId` = ?
 ', 'sii', $new_email, $unverified, $current_user -> userId);
+
+        return [
+            EmailVerification::create((int) $current_user -> userId),
+            EmailChangeRevert::create((int) $current_user -> userId, $previous_email),
+        ];
+    });
 } catch (\mysqli_sql_exception $exception) {
     // The uniqueness check above has a TOCTOU gap: another account (or
     // another request from this same account) can claim this exact email
@@ -105,13 +108,13 @@ Auth::clearUserCache();
 $updated_user = Auth::user();
 
 // Sends the verification link to the new address. If the mailer is down this
-// verifies the user directly and notifies the admin instead (sendFor's own
+// verifies the user directly and notifies the admin instead (sendMail's own
 // failure handling), so nobody gets stranded behind a gate no email can clear.
-EmailVerification::sendFor($updated_user);
+EmailVerification::sendMail($updated_user, $verify_token);
 
 // Sends a "wasn't you?" notice to the OLD address with a revert link - the
 // real owner may know nothing about this change if the new address is one an
 // attacker (who already has the password) controls.
-EmailChangeRevert::sendFor($updated_user, $previous_email);
+EmailChangeRevert::sendMail($updated_user, $previous_email, $revert_token);
 
 JSONResponse::success(['changed' => true]) -> send();

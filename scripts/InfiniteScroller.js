@@ -29,6 +29,7 @@ export class InfiniteScroller {
     /** The last payload, so the announcement can name what it held. */
     #lastResponse = null;
     #active = true;
+    #generation = 0;
     static #THRESHOLD = 150;
     #onScroll;
 
@@ -94,6 +95,11 @@ export class InfiniteScroller {
         this.#active = active;
     }
 
+    /** Discards any response already in flight for contents since replaced. */
+    invalidate() {
+        this.#generation++;
+    }
+
     destroy() {
         this.#active = false;
         if (this.#onScroll) {
@@ -112,6 +118,7 @@ export class InfiniteScroller {
         if (!this.#list || !this.#active) return;
         if (!this.#nearEdge()) return;
 
+        const generation = this.#generation;
         this.#loading = true;
 
         const spinner = document.createElement('li');
@@ -132,6 +139,8 @@ export class InfiniteScroller {
             // the status: it says nothing itself, and the wording below is the
             // scroller's own.
             const result = await Api.request(url, this._buildReq(offset));
+
+            if (generation !== this.#generation) return;
 
             // A refused page won't start working on the next scroll event, so
             // stop asking and say so - silently returning leaves the reader
@@ -231,4 +240,3 @@ export class InfiniteScroller {
 // );
 
 ReadyHandler.add(InfiniteScroller.init);
-

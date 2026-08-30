@@ -81,15 +81,11 @@ class HTMLObjectTest extends TestCase
     public function testAClassBeneathAPrimitiveNamesOnlyItself(): void
     {
         // Notice extends Paragraph, which is a primitive and names nothing, so
-        // the chain begins and ends at Notice. What it is composed with (muted)
-        // is carried separately in mixins and never chained.
+        // the chain begins and ends at Notice.
         $notice = new Notice('careful now');
         $this -> elementFor($notice);
 
-        // The identity alone - the rendered attribute also carries what it is
-        // composed with, which is a separate thing.
         $this -> assertSame('Notice', $notice -> class);
-        $this -> assertSame(['muted'], $notice -> mixins);
     }
 
     public function testEveryLevelFromTheFirstNamedAncestorDownContributes(): void

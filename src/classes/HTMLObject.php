@@ -21,18 +21,6 @@ abstract class HTMLObject extends DOMObject
     // too (ImageItem -> "FeedItem ImageItem").
     public ?string $class = null;
 
-    // What this element is composed WITH: shared visual bundles (Card) and
-    // layout utilities (d-flex, gap-2). Deliberately NOT chained - a subclass
-    // inherits these only by ordinary property inheritance and can replace them
-    // outright, so a child isn't forced into its parent's layout the way it
-    // would be if these were welded into $class.
-    //
-    // This is where a concept like Card lives: PHP allows one parent, so a Form
-    // that looks like a card can't extend Card, and before this the only way to
-    // say it was to hardcode the name into $class in dozens of places.
-    /** @var string[] */
-    public array $mixins = [];
-
     // Set by the first output step - toDOM() or toJSON() - and a second one
     // throws. Output is one-shot because most objects build their children into
     // $this->contents in toDOM(), so a second call would duplicate them, and
@@ -129,12 +117,8 @@ abstract class HTMLObject extends DOMObject
             $element -> setAttribute('id', $this -> id);
         }
 
-        // Identity first, then what it's composed with, so the attribute reads
-        // as "what this is, then how it looks".
-        $class_names = array_filter(array_merge([$this -> class], $this -> mixins), static fn (?string $name): bool => $name !== null && $name !== '');
-
-        if ($class_names !== []) {
-            $element -> setAttribute('class', implode(' ', $class_names));
+        if ($this -> class !== null && $this -> class !== '') {
+            $element -> setAttribute('class', $this -> class);
         }
 
         $this -> applyAttributes($element);

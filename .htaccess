@@ -1,17 +1,36 @@
-# Never serve dotfiles (.env especially - it holds credentials) or SQL dumps.
-# .well-known is exempted so the ACME challenge exemption below can work on
-# newer Apache (2.4.68+), which applies this FilesMatch to the .well-known
-# directory segment during the walk and denies it at the authz phase - which
-# runs BEFORE the mod_rewrite exemption. Anything else under .well-known is
-# still 403'd by the leading-dot RewriteRule further down.
-<FilesMatch "^\.(?!well-known$)|\.sql$">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Deny from all
-    </IfModule>
-</FilesMatch>
+# The site root is also the working tree. Deny it by default, then admit only
+# routes and public assets: a newly added source, test, dependency or data file
+# stays private until it is deliberately published here.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
+
+<IfModule mod_authz_core.c>
+    # Public route shapes. A path with no rewrite below still reaches 404.php;
+    # it never falls through to an arbitrary file on disk.
+    <If "%{REQUEST_URI} =~ m#^/[a-z0-9-]*$# || %{REQUEST_URI} =~ m#^/(admin|api)/[a-z0-9-]+$#">
+        Require all granted
+    </If>
+
+    # Internal rewrite destinations. A direct request naming .php is turned
+    # into the normal 404 page by the rewrite rule below.
+    <If "%{REQUEST_URI} =~ m#^/[a-z0-9-]+\.php$# || %{REQUEST_URI} =~ m#^/api/[a-z0-9-]+\.php$#">
+        Require all granted
+    </If>
+
+    <If "%{REQUEST_URI} =~ m#^/(favicon\.ico|robots\.txt|scripts/[A-Za-z0-9_-]+\.js|styles/[A-Za-z0-9_-]+\.css|locales/[a-z-]+\.json)$#">
+        Require all granted
+    </If>
+
+    <If "%{REQUEST_URI} =~ m#^/\.well-known/acme-challenge/[A-Za-z0-9_-]+$#">
+        Require all granted
+    </If>
+</IfModule>
 
 # The stylesheets and scripts are served exactly as they are written, with no
 # build step to shrink them, and they block the first paint - so this is the

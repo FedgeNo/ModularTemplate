@@ -8,8 +8,8 @@
 
 /* ---------- Cards & surfaces ---------- */
 
-/* Everything that reads as a raised surface, listed by what it IS rather than
-   composed into each one's class attribute. .Card is the plain standalone one;
+/* Everything that reads as a raised surface, listed by what it IS. .Card is
+   the plain standalone one;
    .Form covers every form carrying the shared identity (see FormForm), so its
    subclasses are all included. The rule below it zeroes the trailing margin
    inside one, and has to name the same set - keep the two lists in step. */
@@ -41,6 +41,78 @@
     .TestResults, .TestSuitePanel
 ) > *:last-child {
     margin-bottom: 0;
+}
+
+/* ---------- Component layout ---------- */
+
+/* FormForm is the shared identity for the forms that previously composed
+   Bootstrap's flex-column/gap-2 utilities. */
+.Form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.Notice,
+.PageGenerationTime {
+    color: var(--muted);
+}
+
+.PageGenerationTime {
+    font-size: 0.875rem;
+}
+
+.VerificationNotice {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.VerificationNoticeActions,
+.ConfirmDialogActions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.SitePolicyLinks {
+    display: flex;
+    gap: 1rem;
+}
+
+.SetupNextSteps,
+.ThemeSelector,
+.LanguageSelector,
+.TestSuitePanel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.TestSuitePanel {
+    align-items: flex-start;
+}
+
+.ErrorList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.UsernameAvailability {
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+.HiddenLabel {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
 }
 
 /* ---------- Animations ---------- */

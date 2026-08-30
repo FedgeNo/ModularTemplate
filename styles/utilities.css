@@ -3,12 +3,9 @@
    Tiny, generic, single‑purpose modifier classes.
    ============================================================ */
 
-.muted  { color: var(--muted); }
-.text-sm { font-size: 0.875rem; }
 .text-lg { font-size: 1.125rem; }
 
 ::selection {
     background-color: var(--accent-soft);
     color: var(--ink);
 }
-

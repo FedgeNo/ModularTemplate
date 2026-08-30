@@ -140,6 +140,45 @@ SET `time_zone` = ?
         return $stmt;
     }
 
+    /**
+     * Runs a unit of work atomically and retries transactions the database
+     * already rolled back for a deadlock or lock-wait timeout.
+     */
+    public static function transaction(callable $work, int $attempts = 3): mixed
+    {
+        $connection = self::connection();
+
+        for ($attempt = 1; ; $attempt++) {
+            mysqli_begin_transaction($connection);
+
+            try {
+                $answer = $work();
+            } catch (\Throwable $exception) {
+                mysqli_rollback($connection);
+
+                if ($attempt >= $attempts || !in_array($exception -> getCode(), [1213, 1205], true)) {
+                    throw $exception;
+                }
+
+                usleep($attempt * 50000 + random_int(0, 50000));
+
+                continue;
+            }
+
+            try {
+                mysqli_commit($connection);
+            } catch (\Throwable $exception) {
+                // A failed commit has an unknown outcome and is not safe to
+                // retry. Discard the connection so later work cannot reuse it.
+                self::$connection = null;
+
+                throw $exception;
+            }
+
+            return $answer;
+        }
+    }
+
     public static function row(string $sql, string $class, ?string $types = null, mixed ...$params): ?object
     {
         $result = mysqli_stmt_get_result(self::run($sql, $types, ...$params));

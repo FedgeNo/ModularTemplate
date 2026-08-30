@@ -9,7 +9,6 @@ declare(strict_types=1);
 class SetupNextSteps extends OrderedList
 {
     public ?string $class = 'SetupNextSteps';
-    public array $mixins = ['d-flex', 'flex-column', 'gap-2'];
 
     public function toDOM(): \DOMElement
     {

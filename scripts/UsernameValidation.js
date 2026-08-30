@@ -33,7 +33,7 @@ export class UsernameValidation {
         const requested = input.value;
         if (requested === '') {
             status.textContent = '';
-            status.classList.remove('Error', 'muted');
+            status.classList.remove('Error');
             return;
         }
         const debounce_id = setTimeout(async () => {
@@ -51,7 +51,6 @@ export class UsernameValidation {
             if (input.value !== requested) return;
 
             status.classList.toggle('Error', !data.available);
-            status.classList.toggle('muted', data.available);
             status.textContent = data.available
                 ? `${data.username} is available.`
                 : `${data.username} is already taken.`;

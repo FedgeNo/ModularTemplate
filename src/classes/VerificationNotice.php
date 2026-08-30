@@ -9,14 +9,12 @@ declare(strict_types=1);
 class VerificationNotice extends Div
 {
     public ?string $class = 'VerificationNotice';
-    public array $mixins = ['d-flex', 'flex-column', 'gap-3'];
 
     public function toDOM(): \DOMElement
     {
         $this -> contents[] = new Paragraph((string) (Strings::for(self::class)['instructions'] ?? ''));
 
-        $actions = new Div();
-        $actions -> mixins = ['d-flex', 'gap-2'];
+        $actions = new VerificationNoticeActions();
 
         $actions -> addContent(new VerificationResendButton());
 

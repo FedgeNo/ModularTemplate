@@ -5,7 +5,6 @@ declare(strict_types=1);
 class ErrorList extends ItemList
 {
     public ?string $class = 'ErrorList';
-    public array $mixins = ['d-flex', 'flex-column', 'gap-1'];
 
     /**
      * @param string[] $errors

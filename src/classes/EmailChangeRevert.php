@@ -15,8 +15,12 @@ class EmailChangeRevert
 {
     public static function sendFor(User $user, string $previous_email): void
     {
-        $token = self::create((int) $user -> userId, $previous_email);
+        self::sendMail($user, $previous_email, self::create((int) $user -> userId, $previous_email));
+    }
 
+    /** Sends a token created separately, so callers can create it transactionally. */
+    public static function sendMail(User $user, string $previous_email, string $token): void
+    {
         $revert_url = ServerURL::absolute('/revert-email?token=' . $token);
 
         $name = $user -> title ?: $user -> slug;
@@ -90,54 +94,53 @@ SELECT `userId`, `previousEmail`
 
         $user_id = (int) $revert -> userId;
 
-        // The previous address was already verified before the change
-        // happened, so restoring it restores that verified state too - no
-        // fresh verification round trip needed.
-        $verified = 1;
+        try {
+            return DB::transaction(function () use ($token_hash, $user_id, $revert): bool {
+                // Claim before changing the account. Only one request racing
+                // this token can delete exactly one row.
+                $claim = DB::run('
+DELETE
+    FROM `EmailChangeReverts`
+    WHERE `tokenHash` = ? AND `expiresAt` > NOW()
+', 's', $token_hash);
 
-        $update_stmt = DB::prepare('
+                if (mysqli_stmt_affected_rows($claim) !== 1) {
+                    return false;
+                }
+
+                // The previous address was verified before the change.
+                $verified = 1;
+
+                DB::run('
 UPDATE `Users`
     SET `email` = ?, `verified` = ?
     WHERE `userId` = ?
-');
-        DB::bind($update_stmt, 'sii', $revert -> previousEmail, $verified, $user_id);
+', 'sii', $revert -> previousEmail, $verified, $user_id);
 
-        // `email` is UNIQUE. This should never actually fire - signup and
-        // change-email both refuse to hand out an address that's reserved by
-        // an outstanding revert (see EmailChangeRevert::isReserved()) - but
-        // the restore must not report success if it somehow does. Under
-        // mysqli's exception mode a duplicate-key throws rather than returning
-        // false, so catch it and report the same graceful failure.
-        try {
-            mysqli_stmt_execute($update_stmt);
-        } catch (\mysqli_sql_exception $exception) {
-            return false;
-        }
+                User::bumpSessionVersion($user_id);
 
-        // Every session dies with the change - the change that triggered
-        // this was either unauthorized or at minimum suspicious enough to
-        // warrant it.
-        User::bumpSessionVersion($user_id);
-
-        // Any pending verification for the abandoned new address is moot -
-        // and any other pending revert token for this user (e.g. from a rapid
-        // second change) is moot too, since this one already reverted things.
-        DB::run('
+                DB::run('
 DELETE
     FROM `EmailVerifications`
     WHERE `userId` = ?
 ', 'i', $user_id);
 
-        DB::run('
+                DB::run('
 DELETE
     FROM `EmailChangeReverts`
     WHERE `userId` = ?
 ', 'i', $user_id);
 
-        return true;
+                return true;
+            });
+        } catch (\mysqli_sql_exception $exception) {
+            // A reserved address should remain free, but the unique index is
+            // still the authority if another writer races the restore.
+            return false;
+        }
     }
 
-    private static function create(int $user_id, string $previous_email): string
+    public static function create(int $user_id, string $previous_email): string
     {
         $token = bin2hex(random_bytes(32));
         $token_hash = hash('sha256', $token);

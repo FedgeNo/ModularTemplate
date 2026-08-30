@@ -24,12 +24,12 @@ final class TestDatabase
 {
     private static ?string $name = null;
 
-    public static function setUp(): bool
+    /** Builds the throwaway database beside the captured application database. */
+    public static function setUp(string $source): bool
     {
-        $source = (string) Config::get('database');
         $test_db = $source . '_test';
 
-        if (!self::isSafeIdentifier($source) || !self::isSafeIdentifier($test_db) || $test_db === $source) {
+        if (!self::isSafeIdentifier($source) || !self::isSafeIdentifier($test_db) || !str_ends_with($test_db, '_test')) {
             fwrite(STDERR, "Refusing to set up a test database - unsafe or ambiguous database name ({$source}).\n");
 
             return false;

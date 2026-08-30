@@ -4,13 +4,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/api-init.php';
 
-// Every /api/ endpoint requires POST - init.php's centralized CSRF check only
-// covers POST requests, so a GET-reachable endpoint would bypass it.
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    JSONResponse::error('Method not allowed', 405) -> send();
-}
-
-$payload = json_decode((string) file_get_contents('php://input'), true);
+$payload = json_decode(API_REQUEST_BODY, true);
 $payload = is_array($payload) ? $payload : [];
 
 $username = User::normaliseUsername((string) ($payload['username'] ?? ''));
@@ -81,10 +75,21 @@ $hash = password_hash($password, PASSWORD_DEFAULT);
 
 $unverified = 0;
 
-DB::run('
+try {
+    DB::run('
 INSERT INTO `Users` (`slug`, `email`, `passwordHash`, `title`, `verified`)
     VALUES (?, ?, ?, ?, ?)
 ', 'ssssi', $username, $email, $hash, $display_name, $unverified);
+} catch (\mysqli_sql_exception $exception) {
+    // The availability check and insert are separate operations; a concurrent
+    // signup can win between them. Let the unique index settle that race.
+    if ($exception -> getCode() !== 1062) {
+        throw $exception;
+    }
+
+    JSONResponse::fieldError('username', 'That username or email is already taken.') -> send();
+}
+
 $new_user_id = (int) mysqli_insert_id(DB::connection());
 
 $user = new User();
