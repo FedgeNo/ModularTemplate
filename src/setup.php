@@ -15,14 +15,14 @@ if (is_file(__DIR__ . '/../.env')) {
     session_abort();
     http_response_code(503);
 
-    $page = Page::create('Site Unavailable');
+    $page = new Page(['title' => 'Site Unavailable']);
     $page -> addContent(new Paragraph('The site can\'t reach its database right now. Please try again in a few minutes.'));
     $page -> addContent(new Notice('If you run this site: the database connection using the credentials in .env is failing - check that the database server is running and that those credentials are still valid. This page is shown instead of the setup wizard precisely so a database outage can\'t be used to reconfigure the site.'));
     $page -> send();
     exit;
 }
 
-// A leftover session from before a reinstall would make Page::create() try
+// A leftover session from before a reinstall would make the page try
 // (and fail) to load its user from the not-yet-configured database.
 unset($_SESSION['userId']);
 
@@ -182,18 +182,18 @@ if ($environment_errors === [] && $_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 if ($success) {
-    $page = Page::create('Setup Complete');
+    $page = new Page(['title' => 'Setup Complete']);
 
     $page -> addContent(new Paragraph('Setup finished - the database, a least-privilege runtime account, and .env are all in place. Two small steps remain:'));
     $page -> addContent(new SetupNextSteps());
 } elseif ($environment_errors !== []) {
-    $page = Page::create('Set Up');
+    $page = new Page(['title' => 'Set Up']);
 
     $page -> addContent(new Paragraph('Welcome! Before setup can continue, this server is missing some prerequisites:'));
     $page -> addContent(new ErrorList($environment_errors));
     $page -> addContent(new Notice('Fix these on the server, then reload this page to re-check.'));
 } else {
-    $page = Page::create('Set Up');
+    $page = new Page(['title' => 'Set Up']);
 
     if ($errors !== []) {
         $page -> addContent(new ErrorList($errors));
