@@ -181,20 +181,20 @@ if ($environment_errors === [] && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-if ($success) {
-    $page = new Page(['title' => 'Setup Complete']);
+$page = new Page(['title' => $success ? 'Setup Complete' : 'Set Up']);
 
+if (!$success) {
+    $page -> addContent(new Notice('Recommended: run sudo php bin/install.php from the project directory instead of using web setup.'));
+}
+
+if ($success) {
     $page -> addContent(new Paragraph('Setup finished - the database, a least-privilege runtime account, and .env are all in place. Two small steps remain:'));
     $page -> addContent(new SetupNextSteps());
 } elseif ($environment_errors !== []) {
-    $page = new Page(['title' => 'Set Up']);
-
     $page -> addContent(new Paragraph('Welcome! Before setup can continue, this server is missing some prerequisites:'));
     $page -> addContent(new ErrorList($environment_errors));
     $page -> addContent(new Notice('Fix these on the server, then reload this page to re-check.'));
 } else {
-    $page = new Page(['title' => 'Set Up']);
-
     if ($errors !== []) {
         $page -> addContent(new ErrorList($errors));
     }
